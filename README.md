@@ -9,7 +9,7 @@ This repository is dedicated to our project, '_단일 보드 컴퓨터와 인공
 ## Requirments
 * Tensorflow 2.4.1
 * Pillow 8.2.0
-* GStreamer
+* GStreamer 1.14.5
 * Python 3.8.10
     * python3-gi
     * python3-gst-1.0
