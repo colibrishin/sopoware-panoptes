@@ -1,0 +1,29 @@
+Improvement
+- Monitoring Process needed
+- Make a Dockerfile
+- Saperate a branch, demo version and batch version
+
+Refactoring
+- tflite_model.py
+
+Requirement
+    Module
+    - Add bluetooth module
+    - Add sidewalk check module
+    - Add android app to communicate
+    - Add GPIO, buzzer module
+
+    Dataset
+    - Record a video
+    - Pick some images from video
+    - Label the images
+
+TODO
+- visualize.py (In refactoring phase)
+
+Tweak
+- Experiment to change MobileNetV3 small model to large model
+- Change resolution to 640x480 -> 1280x720
+
+Consideration
+- make a python package

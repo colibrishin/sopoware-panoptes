@@ -1,0 +1,117 @@
+<html>
+    <head>
+        <title>Real-time Prediction</title>
+        <meta charset="UTF-8"/>
+
+        <script>
+            function xmlReq(url) {
+                return new Promise(function(resolve, reject) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == XMLHttpRequest.DONE) {
+                            resolve(xhr.responseText);
+                        }
+                    }
+                    xhr.open('GET', url, true);
+                    xhr.send(null);
+                })
+            }
+
+            function xmlReq_blob(url) {
+                return new Promise(function(resolve, reject) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.responseType = "blob";
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState == XMLHttpRequest.DONE) {
+                            resolve(xhr.response);
+                        }
+                    }
+                    xhr.open('GET', url, true);
+                    xhr.send(null);
+                })
+            }
+
+            async function reload_img(id, filename) {
+                content = await xmlReq_blob(document.location.href + '/' + filename);
+                console.log(content);
+                document.getElementById(id).src=URL.createObjectURL(content);
+            }
+
+            async function draw_table() {
+                var parser = new DOMParser();
+                var content = '';
+                var xml, item, tr_body;
+                var name, color, probability;
+
+                content = await xmlReq(document.location.href + '/probability.xml');
+                xml = parser.parseFromString(content, "text/xml");
+                
+                item = xml.getElementsByTagName("item");
+                tr_body = document.getElementById("result").innerHTML = '';
+                for (var i = 0; i < item.length; ++i){
+                    tr_body = document.createElement('tr');
+
+                    name = document.createElement('td');
+                    name.appendChild(document.createTextNode(item[i].childNodes[0].innerHTML))
+                    color = document.createElement('td');
+                    color.appendChild(document.createTextNode("\u25a0"))
+                    color.style.color = item[i].childNodes[1].innerHTML;
+                    color.style.fontSize = 20;
+                    probability = document.createElement('td');
+                    probability.appendChild(document.createTextNode(item[i].childNodes[2].innerHTML))
+                    
+                    tr_body.appendChild(name);
+                    tr_body.appendChild(color);
+                    tr_body.appendChild(probability);
+                    document.getElementById("result").appendChild(tr_body)
+                }
+            }
+            setInterval(function(){
+                draw_table();
+                reload_img("original", "taken.jpg");
+                reload_img("mask", "mask.png");
+            }, 1000);
+        </script>
+    </head>
+    <body>
+        <div>
+            <table>
+                <tr>
+                    <th>
+                        Image Taken
+                    </th>
+                    <th>
+                        Image Masked
+                    </th>
+                </tr>
+                <tr>
+                    <td style="width:fit-content; height:fit-content;">
+                        <img id="original" src="taken.jpg"/>
+                    </td>
+                    <td style="width:fit-content; height:fit-content;">
+                        <img id="mask" src="mask.png"/>
+                    </td>
+                </tr>
+            </table>
+
+            <table style="position: absolute; top:0%; right:0%;"> 
+                <thead>
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Color
+                        </th>
+                        <th>
+                            Probability
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="result">
+
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
