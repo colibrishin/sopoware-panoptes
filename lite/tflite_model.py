@@ -82,14 +82,17 @@ def predict_file_tflite(
 
     return predict_tflite(img, interpreter_dict)
 
-if __name__ == "__main__":
+def main():
+    '''
+    Start the Capture-and-determine loop
+    '''
+
     mem_allocation()
     model = load_model('tflite.model')
 
     pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
 
     img = None
-
     i = 0
     total = 0
 
@@ -127,3 +130,6 @@ if __name__ == "__main__":
         except Exception as e:
             video_stream.release_pipe(pipe)
             raise Exception(e)
+
+if __name__ == "__main__":
+    main()
