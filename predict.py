@@ -9,7 +9,6 @@ def predict(
     Get Mask Precdiction from given model and images
     
     model = pre-compiled model
-    weights_path =  path to weights file
     img_path = path to image file
     '''
     try:
