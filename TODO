@@ -19,6 +19,7 @@ Requirement
     - Label the images
 
 TODO
+- tflite_model.py (Argument and attatching modules)
 - visualize.py (In refactoring phase)
 
 Tweak
@@ -27,3 +28,6 @@ Tweak
 
 Consideration
 - make a python package
+
+If possible...
+- Make a graph of required memory allocation of model along with hyperparameter alterations
