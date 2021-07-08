@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_addons as tfa
 from dataset import create_batch_crossvalidation
-from model import MobileNetV3, _model_exception_check_if_trainable
+from model import MobileNetV3, model_exception_check_if_trainable
 import datetime, os
 
 def train_quick_crossvalidation(
@@ -39,7 +39,7 @@ def train_quick_crossvalidation(
     '''
 
     model = MobileNetV3('')
-    model.make_train_ready(learning_rate)
+    model.prepare_train(learning_rate)
 
     train_size, valid_size, dataset = create_batch_crossvalidation(
         dataset_name, 
@@ -107,7 +107,7 @@ def fit(
             tf.keras.callbacks.ModelCheckpoint('./weights/' + time + '/best_weights', verbose=verbose, save_best_only=save_best_only, save_weights_only=save_weights_only)
         ]
 
-        _model_exception_check_if_trainable(model)
+        model_exception_check_if_trainable(model)
 
         if use_exist_weights is not None:
             model.load_weights(use_exist_weights)

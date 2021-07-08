@@ -1,5 +1,5 @@
 import tensorflow as tf
-from model import MobileNetV3, _model_exception_check_weights
+from model import MobileNetV3, model_exception_check_weights
 
 def predict(
         model : MobileNetV3,
@@ -17,7 +17,7 @@ def predict(
         img = tf.image.resize(img, model.shape)
         img = tf.reshape(tensor=img, shape=(1, model.shape[0], model.shape[1], 3))
 
-        _model_exception_check_weights(model)
+        model_exception_check_weights(model)
         pred = model.predict(img)
 
         pred = tf.argmax(pred, axis=-1)
