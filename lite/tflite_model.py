@@ -85,12 +85,20 @@ def predict_file_tflite(
 def main():
     '''
     Start the Capture-and-determine loop
+
+    DEBUG=[1 or 0] to see the process of loop.
     '''
 
     mem_allocation()
     model = load_model('tflite.model')
-
     pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
+
+    # TODO : Gets DEBUG value from argument
+    DEBUG = True
+
+    capture_time = 0
+    output_process_time = 0
+    prediction_time = 0
 
     img = None
     i = 0
@@ -98,33 +106,37 @@ def main():
 
     while True:
         try:
-            t = time.time()
+            if DEBUG is True:
+                t = time.time()
+                img = video_stream.get_frame(pipe)
+                capture_time = time.time() - t
+                print('Capture Time:', capture_time)
+                shutil.copy('taken.jpg', '/var/www/html/taken.jpg')
+                
+                t = time.time()
+                ret = predict_tflite(img, model)
+                prediction_time = time.time() - t
+                print('Predict Time: ', prediction_time)
 
-            img = video_stream.get_frame(pipe)
-            #tf.keras.preprocessing.image.save_img('/var/www/html/taken.jpg', img)
-            shutil.copy('taken.jpg', '/var/www/html/taken.jpg')
+                t = time.time()
+                probability = get_full_probability(ret, 32) 
+                write_probability_table_xml(probability, label_name_n_code)
+                shutil.copy('probability.xml', '/var/www/html/probability.xml')
 
-            conv = time.time() - t
-            print('Capture Time:', conv)
+                ret = colorize_mask(ret, label_pixel)
+                tf.keras.preprocessing.image.save_img('/var/www/html/mask.png', ret)
+                output_process_time = time.time() - t
+                print('Processing Time: ', output_process_time)
+
+                total = total + capture_time + prediction_time + output_process_time
+                i = i + 1
+                print('Average: ', total / i)
+            else:
+                img = video_stream.get_frame(pipe)
+                ret = predict_tflite(img, model)
             
-            t = time.time()
-            ret = predict_tflite(img, model)
-            pred = time.time() - t
-            print('Predict Time: ', pred)
+            # TODO : Get a section of prediction, calculate the percentage of sidewalk and call buzzer function if its higher than .7
 
-            t = time.time()
-            probability = get_full_probability(ret, 32)
-            write_probability_table_xml(probability, label_name_n_code)
-            shutil.copy('probability.xml', '/var/www/html/probability.xml')
-            
-            ret = colorize_mask(ret, label_pixel)
-            tf.keras.preprocessing.image.save_img('/var/www/html/mask.png', ret)
-            prep = time.time() - t
-            print('Processing Time: ', prep)
-
-            total = total + pred + conv + prep
-            i = i + 1
-            print('Average: ', total / i)
         except KeyboardInterrupt:
             video_stream.release_pipe(pipe)
         except Exception as e:
