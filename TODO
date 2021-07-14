@@ -1,6 +1,5 @@
 Improvement
 - Monitoring Process needed
-- Make a Dockerfile
 - Saperate a branch, demo version and batch version
 
 Refactoring
