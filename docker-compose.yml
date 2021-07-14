@@ -3,6 +3,8 @@ services:
     sopoware-panoptes:
         ports:
             - "80"
+        volumes:
+            - /tmp/argus_socket:/tmp/argus_socket
         container_name: sopoware-panoptes
         build:
             context: .
