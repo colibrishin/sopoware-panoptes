@@ -1,4 +1,5 @@
-#! /bin/bash
+#!/bin/bash
 
-cd /root/sopoware-panoptes/lite
+# using dockerfile defined environment variable.
+cd $DIR/lite
 python3 ./tflite_model.py
