@@ -1,31 +1,31 @@
 version: "3"
 services:
-    sopoware-panoptes:
-        ports:
-            - "80"
-        volumes:
-            - /tmp/argus_socket:/tmp/argus_socket
-        container_name: sopoware-panoptes
-        build:
-            context: .
-            dockerfile: ./Dockerfile
-            args:
-                DEBUG: 1
-        image: sopoware-panoptes:latest
+        sopoware-panoptes:
+                ports:
+                        - "80:80"
+                container_name: sopoware-panoptes
+                volumes: 
+                        - /tmp/argus_socket:/tmp/argus_socket
+                build: 
+                        context: .
+                        dockerfile: ./Dockerfile
+                        args:
+                                DEBUG: 1 
+                image: sopoware-panoptes:latest
+                
+                # R32 (release), REVISION: 5.1, GCID: 27362550, BOARD: t210ref, EABI: aarch64, DATE: Wed May 19 18:07:59 UTC 2021
+                # docker-compose version is 1.17 if you install it from apt-get
+                # You have to manually set runtime when you run the image.
+                # or, you could just build and install higher version of docker-compose
+                
+                #runtime: nvidia works on 1.27.0+
+                #deploy... works on 1.28.0+
 
-        # R32 (release), REVISION: 5.1, GCID: 27362550, BOARD: t210ref, EABI: aarch64, DATE: Wed May 19 18:07:59 UTC 2021
-        # docker-compose version is 1.17 if you install it from apt-get
-        # You have to manually ser runtime when you run the image.
-        # or, you could just build and install higher version of docker-compose
-
-        # runtime: nvidia works on 1.27.0+
-        # deploy... works on 1.28.0+
-
-        # runtime: nvidia
-        # deploy:
-        #    resources:
-        #        reservations:
-        #            devices:
-        #                - driver: nvidia
-        #                count: 1
-        #                capabilities: [gpu]
+                #runtime: nvidia
+                #deploy:
+                #        resources:
+                #                reservations:
+                #                        devices:
+                #                                - driver: nvidia
+                #                                  count: 1
+                #                                  capabilities: [gpu]
