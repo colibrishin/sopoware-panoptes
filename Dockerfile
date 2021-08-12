@@ -9,7 +9,7 @@ RUN apt-get purge -y gnome* ubuntu-desktop
 RUN apt-get autoremove
 RUN apt-get clean
 RUN apt-get upgrade -y 
-ENV SOPOWARE_DIR=${HOME}/sopoware-panoptes
+ENV SOPOWARE_DIR=/root/sopoware-panoptes
 RUN mkdir $SOPOWARE_DIR
 WORKDIR ${SOPOWARE_DIR}
 COPY ./ ./

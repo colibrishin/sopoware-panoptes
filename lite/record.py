@@ -15,7 +15,7 @@ if __name__ == "__main__":
             print("Recording...")
             time.sleep(1)
         except KeyboardInterrupt:
-            video_stream.release_pipe(pipe)
+            record_stream.release_pipe(pipe)
         except Exception as e:
-            video_stream.release_pipe(pipe)
+            record_stream.release_pipe(pipe)
             raise Exception(e)
