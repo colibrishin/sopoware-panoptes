@@ -1,21 +1,20 @@
-import tensorflow as tf
 import time
 import shutil
-import record_stream 
-from label import label_pixel, label_name_n_code
-from mask_beautifier import colorize_mask
-from probability import write_probability_table_xml, get_full_probability
+import video_stream 
 import signal
 
-if __name__ == "__main__":
-    pipe = record_stream.start_gst(record_stream.LAUNCH_PIPELINE)
+def main():
+    pipe = video_stream.start_gst(video_stream.INDEX_CAPTURE_PIPELINE)
 
     while True:
         try:
-            print("Recording...")
             time.sleep(1)
-        except KeyboardInterrupt:
-            record_stream.release_pipe(pipe)
-        except Exception as e:
-            record_stream.release_pipe(pipe)
+        except KeyboardInterrupt as e:
+            video_stream.release_pipe(pipe)
             raise Exception(e)
+        except Exception as e:
+            video_stream.release_pipe(pipe)
+            raise Exception(e)
+
+if __name__ == "__main__":
+    main()

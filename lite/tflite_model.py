@@ -137,8 +137,9 @@ def main():
             
             # TODO : Get a section of prediction, calculate the percentage of sidewalk and call buzzer function if its higher than .7
 
-        except KeyboardInterrupt:
+        except KeyboardInterrupt as e:
             video_stream.release_pipe(pipe)
+            raise Exception(e)
         except Exception as e:
             video_stream.release_pipe(pipe)
             raise Exception(e)
