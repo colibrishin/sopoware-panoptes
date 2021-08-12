@@ -30,7 +30,8 @@ cp [quantized pre-trained Tensorflow lite model] [cloned repository directory]/l
 ```
 Build the image (On default, image will be built as debug mode.)
 ```
-sudo docker-compose build
+chmod +x build.sh
+sh build.sh
 ```
 Start the container
 ```
