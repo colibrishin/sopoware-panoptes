@@ -38,6 +38,8 @@ sudo docker run -it -d --runtime nvidia -p 80:80 -v /tmp/argus_socket:/tmp/argus
 ```
 If it's working correctly and if it is built as debug mode, you can retrieve the prediction monitoring by accessing the device IP address on port 80 in HTML format.
 
+TODO : Monitoring Process
+
 ## Demo
 TODO
 
