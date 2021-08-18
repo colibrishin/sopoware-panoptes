@@ -1,4 +1,4 @@
 #!/bin/bash
 
 sudo docker-compose build 
-docker image prune
+sudo docker image prune
