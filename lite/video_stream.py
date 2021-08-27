@@ -35,9 +35,3 @@ def get_frame(pipe):
 
 def release_pipe(pipe):
     pipe.set_state(Gst.State.NULL)
-
-def flush_start(pipe):
-    Gst.Element.send_event(pipe, Gst.Event.new_flush_start())
-
-def flush_stop(pipe):
-    Gst.Element.send_event(pipe, Gst.Event.new_flush_stop(True))
