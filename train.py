@@ -48,7 +48,7 @@ def train_quick_crossvalidation(
         batch_size, 
         buffer_size)
 
-    history = fit(
+    history, _ = fit(
         model, 
         dataset['train'], 
         dataset['valid'], 
