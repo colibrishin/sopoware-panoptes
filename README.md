@@ -5,7 +5,7 @@
 ###### Computer Enginnering, Daejeon University
 
 ## What is this?
-This repository is dedicated to our project, '_A sidewalk warning system with single board computer and deep learning for shared kickboard_', includes scripts for training a deep learning model and deploying and running it in Jetson Nano. As a semantic segmentation model, MobileNetV3-Small is used.
+This repository is dedicated to our project, '_A sidewalk warning system for shared kickboard using single board computer and deep learning_', includes scripts for training a deep learning model and deploying and running it in Jetson Nano. As a semantic segmentation model, MobileNetV3-Small is used.
 
 ## Requirments
 * Tensorflow 2.4.1
