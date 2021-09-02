@@ -9,7 +9,7 @@ This project is aiming to prevent a shared kickboard driving on a sidewalk by us
 
 This repository is dedicated to our project, '_A sidewalk warning system for shared kickboard using single board computer and deep learning_', includes scripts for training a deep learning model and deploying and running it in Jetson Nano.
 
-## Requirments
+## Requirements
 ### Necessary hardwares
 * Nvidia Jetson Nano
 * IMX219-77
