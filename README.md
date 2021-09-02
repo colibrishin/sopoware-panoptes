@@ -9,9 +9,9 @@ This repository is dedicated to our project, '_단일 보드 컴퓨터와 인공
 
 ## Requirments
 * Tensorflow 2.4.1
-* Pillow 8.2.1
 * GStreamer 1.14.5
 * Python 3.8.10
+    * Pillow
     * python3-gi
     * python3-gst-1.0
 * docker-compose 1.17.1 or later (See docker-compose.yml for more information)
