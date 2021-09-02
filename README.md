@@ -8,6 +8,13 @@
 This repository is dedicated to our project, '_A sidewalk warning system for shared kickboard using single board computer and deep learning_', includes scripts for training a deep learning model and deploying and running it in Jetson Nano. As a semantic segmentation model, MobileNetV3-Small is used.
 
 ## Requirments
+### Necessary hardwares
+* Nvidia Jetson Nano
+* IMX219-77
+* Buzzer (3.3V - 5V)
+* Bluetooth Module
+* microSD (At least 16GB ~)
+### Softwares
 * Tensorflow 2.4.1
 * GStreamer 1.14.5
 * Python 3.8.10
