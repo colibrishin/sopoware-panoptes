@@ -51,11 +51,12 @@ def dataset_changer(input, folder):
   isWindows = True
 
   regex = re.split(r"\\\\", input)
+  
   if len(regex) == 1:
     regex = re.split(r"/", input)
     isWindows = False
   
-  regex[-3] = folder
+  regex[-3] = folder.numpy().decode("utf-8")
 
   if isWindows:
     regex = "\\\\".join(regex)
@@ -65,8 +66,8 @@ def dataset_changer(input, folder):
   return regex
 
 def extension_changer(input, extension):
-  regex = re.split(r".", input.numpy().decode("utf-8"))
-  regex[-1] = extension
+  regex = re.split(r"[.]", input.numpy().decode("utf-8"))
+  regex[-1] = extension.numpy().decode("utf-8")
 
   return ".".join(regex)
 
