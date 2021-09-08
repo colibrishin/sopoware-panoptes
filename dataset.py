@@ -42,7 +42,44 @@ def pil_load_img(input):
   y = tf.numpy_function(pil_to_numpy, [input], tf.uint8)
   y = tf.ensure_shape(y, [None, None, 1])
   return y
-# <--- Image Loading Functions end -->
+# <--- Image Loading Functions end --->
+
+# <--- Directory and Extension Functions begin --->
+
+def dataset_changer(input, folder):
+  input = input.numpy().decode("utf-8")
+  isWindows = True
+
+  regex = re.split(r"\\\\", input)
+  if len(regex) == 1:
+    regex = re.split(r"/", input)
+    isWindows = False
+  
+  regex[-3] = folder
+
+  if isWindows:
+    regex = "\\\\".join(regex)
+  else:
+    regex = "/".join(regex)
+
+  return regex
+
+def extension_changer(input, extension):
+  regex = re.match(r"^(.)*[.]$", input.numpy().decode("utf-8"))
+  regex = re.group()
+
+  return regex + extension
+
+@tf.function
+def set_directory_extension(dir, folder, extension):
+  if folder != '':
+    dir = tf.py_function(dataset_changer, [dir, folder], tf.string)
+  if extension != '':
+    dir = tf.py_function(extension_changer, [dir, extension], tf.string)
+  
+  return dir
+
+# <--- Directory and Extension Functions end --->
 
 # <--- Parse Functions begin --->
 def parse_png(image_filename: str):
@@ -57,7 +94,7 @@ def parse_png(image_filename: str):
     images = tf.image.decode_png(images, channels=3)
     images = tf.image.convert_image_dtype(images, tf.uint8)
 
-    mask_pat = tf.strings.regex_replace(image_filename, 'images', 'labels')
+    mask_pat = set_directory_extension(image_filename, 'labels', '')
 
     masks = pil_load_img(mask_pat)
 
@@ -75,9 +112,7 @@ def parse_jpg(image_filename: str):
     images = tf.image.decode_jpeg(images, channels=3)
     images = tf.image.convert_image_dtype(images, tf.uint8)
 
-    mask_pat = tf.strings.regex_replace(image_filename, 'images', 'labels')
-    mask_pat = tf.strings.regex_replace(mask_pat, '.jpg', '.png')
-    mask_pat = tf.strings.regex_replace(mask_pat, '.jpeg', '.png')
+    mask_pat = set_directory_extension(image_filename, 'labels', 'png')
 
     masks = pil_load_img(mask_pat)
 

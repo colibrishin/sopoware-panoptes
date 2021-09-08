@@ -1,2 +1,5 @@
 *.model
 __pycache__/
+weights/
+datasets/
+logs/
