@@ -26,7 +26,7 @@ This repository is dedicated to our project, '_A sidewalk warning system for sha
 * docker-compose 1.17.1 or later (See docker-compose.yml for more information)
 
 ## Documentation
-TODO
+* [Training](https://colab.research.google.com/drive/1rTYmXW5S9tPD-pBJHBiGGSeT_n3EQumC?usp=sharing)
 
 ## Installation
 Clone this repository
