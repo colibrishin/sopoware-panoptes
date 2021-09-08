@@ -38,7 +38,9 @@ def train_quick_crossvalidation(
     verbose = verbosity.
     '''
 
-    model = MobileNetV3('')
+    model = MobileNetV3('', 
+      n_classes=n_classes, 
+      width_multiplier=width_multiplier)
     model.prepare_train(learning_rate)
 
     train_size, valid_size, dataset = create_batch_crossvalidation(
@@ -156,3 +158,4 @@ def evaluate_test(
         return history
     except Exception as e:
         raise Exception('Failed to start evaluation. ', e)
+

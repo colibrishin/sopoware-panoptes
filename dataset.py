@@ -2,6 +2,8 @@ import os
 import tensorflow as tf
 import re
 from glob import glob
+from PIL import Image
+import numpy as np
 
 '''
 Dataset structure must be :
@@ -20,10 +22,32 @@ and, filename of a pair of image and mask must be same.
 '''
 SHAPE = ()
 
+# <--- Image Loading Functions begin -->
+def pil_to_numpy(x):
+  '''
+  This function is implemented for loading image as palette-based
+  '''
+  img = Image.open(x)
+  y = np.array(img)
+  if len(y.shape) == 3:
+    assert "Mask channel is bigger than 3."
+  y = y.reshape(y.shape[0], y.shape[1], 1)
+  return y
+
+@tf.function
+def pil_load_img(input):
+  '''
+  Grape execution function for pil_to_numpy
+  '''
+  y = tf.numpy_function(pil_to_numpy, [input], tf.uint8)
+  y = tf.ensure_shape(y, [None, None, 1])
+  return y
+# <--- Image Loading Functions end -->
+
 # <--- Parse Functions begin --->
 def parse_png(image_filename: str):
     '''
-    Load images and labels. masks are always considered as grayscale.
+    Load images and labels.
 
     image_filename = a filename of image
     returns a dictionary tf dataset, images and masks
@@ -35,15 +59,13 @@ def parse_png(image_filename: str):
 
     mask_pat = tf.strings.regex_replace(image_filename, 'images', 'labels')
 
-    masks = tf.io.read_file(mask_pat)
-    masks = tf.image.decode_png(masks, channels=1)
-    masks = tf.image.convert_image_dtype(masks, tf.uint8)
+    masks = pil_load_img(mask_pat)
 
     return (images, masks)
 
 def parse_jpg(image_filename: str):
     '''
-    Load images and labels. label mask input is always considered as grayscale.
+    Load images and labels.
 
     image_filename = a filename of image
     returns a dictionary tf dataset, images and masks
@@ -54,10 +76,10 @@ def parse_jpg(image_filename: str):
     images = tf.image.convert_image_dtype(images, tf.uint8)
 
     mask_pat = tf.strings.regex_replace(image_filename, 'images', 'labels')
+    mask_pat = tf.strings.regex_replace(mask_pat, '.jpg', '.png')
+    mask_pat = tf.strings.regex_replace(mask_pat, '.jpeg', '.png')
 
-    masks = tf.io.read_file(mask_pat)
-    masks = tf.image.decode_png(masks, channels=1)
-    masks = tf.image.convert_image_dtype(masks, tf.uint8)
+    masks = pil_load_img(mask_pat)
 
     return (images, masks)
 
