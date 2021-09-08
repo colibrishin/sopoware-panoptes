@@ -65,10 +65,10 @@ def dataset_changer(input, folder):
   return regex
 
 def extension_changer(input, extension):
-  regex = re.match(r"^(.)*[.]$", input.numpy().decode("utf-8"))
-  regex = re.group()
+  regex = re.split(r".", input.numpy().decode("utf-8"))
+  regex[-1] = extension
 
-  return regex + extension
+  return ".".join(regex)
 
 @tf.function
 def set_directory_extension(dir, folder, extension):
