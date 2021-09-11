@@ -3,6 +3,8 @@ import tensorflow_addons as tfa
 from mobilenetv3small_wm import MobileNetV3SmallSegmentation as MNV3
 import datetime
 
+from tensorflow.python.compiler.tensorrt import trt_convert as trt
+
 # From "Searching for MobileNetV3" Section 6.1.1
 #
 # "using standard tensorflow RMSPropOptimizer with 0.9 momentum. 
@@ -103,7 +105,7 @@ class MobileNetV3():
         weights_path = Path to weights
         '''
         try:
-            self.model.load_weights(weights_path)
+            self.model.load_weights(weights_path).expect_partial()
             self._is_weights_loaded = True
         except Exception as e:
             raise Exception("Failed to load weights. ", e)
@@ -134,7 +136,7 @@ class MobileNetV3():
         # model.build(input_shape) is impossible. so, compute_output_shape is used.
         # 2021-06-14, Tensorflow 2.4.1
         # [ https://github.com/tensorflow/tensorflow/issues/39906 ]
-        self.model.compute_output_shape(input_shape=(None, self.shape[0], self.shape[1], 3))
+        self.model.compute_output_shape(input_shape=(1, self.shape[0], self.shape[1], 3))
 
     def _save_model(self, save_dir: str):
         '''
@@ -181,13 +183,13 @@ def save_model(model: MobileNetV3):
     except Exception as e:
         raise Exception('Failed to save model', e)
 
-def save_model_tflite(
+def save_model_trt(
     model: MobileNetV3,
     float16: bool=True):
     '''
-    Saving model as tflite interpreter file.
+    Saving model as TensorRT Graph file.
     Means, model file will be also saved automatically.
-    File will be saved under ./models/model-[time]/tflite.model
+    File will be saved under ./models/model-[time]-trt/
 
     model = pre-compiled model
     float16 = Use float16 as weights dtype instead of float32
@@ -195,12 +197,18 @@ def save_model_tflite(
     
     save_dir = ''
 
-    save_dir, _ = save_model(model)
-    converter = tf.lite.TFLiteConverter.from_saved_model(save_dir)
-    if float16 is True:
-        converter.optimizations = [tf.lite.Optimize.DEFAULT]
-        converter.target_spec.supported_types = [tf.float16]
-    tflite_model = converter.convert()
+    try :
+        conversion_params = trt.DEFAULT_TRT_CONVERSION_PARAMS
+        conversion_params = conversion_params._replace(max_workspace_size_bytes=(1<<32))
+        if float16:
+            conversion_params = conversion_params._replace(precision_mode="FP16")
+        conversion_params = conversion_params._replace(maximum_cached_engines=100)
 
-    with open(save_dir + '/tflite.model', 'wb') as f:
-        f.write(tflite_model)
+        save_dir, _ = save_model(model)
+        converter = trt.TrtGraphConverterV2(input_saved_model_dir=save_dir)
+        converter = converter.convert()
+        converter.save(save_dir + '_trt')
+        
+        return save_dir, model
+    except Exception as e :
+        raise Exception('Failed to save model', e)

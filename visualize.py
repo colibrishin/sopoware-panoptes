@@ -23,7 +23,6 @@ def show_predictions(model : MobileNetV3, dataset : tf.Dataset, num : int):
    dataset - a Tensorflow Dataset
    num - a integer value how many images function would take from datasets
    '''
- 
    for x, y in dataset.take(num):
        y_p = model.predict(x)
        display_sample([x[0], y[0], output_conversion(y_p)])

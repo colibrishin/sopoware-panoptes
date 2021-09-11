@@ -1,4 +1,6 @@
 import tensorflow as tf
+from tensorflow.python.framework.convert_to_constants import convert_variables_to_constants_v2
+
 import time
 import shutil
 import video_stream
@@ -18,23 +20,15 @@ def mem_allocation():
         assert 'GPU Device not found'
 
 def load_model(model_path: str):
-    #mem_allocation()
-    interpreter = tf.lite.Interpreter(model_path)
-    interpreter.allocate_tensors()
+    model = tf.saved_model.load(model_path)
+    graph_func = model.signatures['serving_default']
+    frozen_func = convert_variables_to_constants_v2(graph_func)
 
-    input_details = interpreter.get_input_details()
-    output_details = interpreter.get_output_details()
+    return frozen_func
 
-    input_shape = tuple(input_details[0]['shape'])
-
-    return {"input_shape" : input_shape, 
-            "input_details" : input_details, 
-            "output_details" : output_details, 
-            "interpreter" : interpreter}
-
-def predict_tflite(
+def predict_trt(
         img,
-        interpreter_dict=None
+        frozen_func=None
     ):
     '''
     Predict a image using Tensorflow lite model.
@@ -44,13 +38,8 @@ def predict_tflite(
 
     returns, mask output with input shape (height, width, 1)
     '''
-    if interpreter_dict is None:
+    if frozen_func is None:
         assert "Model is not specified"
-    else:
-        interpreter = interpreter_dict['interpreter']
-        input_details = interpreter_dict['input_details']
-        output_details = interpreter_dict['output_details']
-        input_shape = interpreter_dict['input_shape']
 
     if img.shape != input_shape[1:3]:
         img = tf.image.resize(img, input_shape[1:3])
@@ -58,21 +47,18 @@ def predict_tflite(
         assert 'Image channel(s) is not compatible'
 
     img = tf.reshape(img, (1, input_shape[1], input_shape[2], input_shape[3]))
-    interpreter.set_tensor(input_details[0]['index'], img)
-    interpreter.invoke()
-    img = interpreter.get_tensor(output_details[0]['index'])
+    img = frozen_func(img)[0].numpy()
     img = tf.argmax(img, axis=-1)
-    img = tf.expand_dims(img, axis=-1)
     return img[0]
 
 def predict_file_tflite(
         img: str,
-        interpreter_dict=None
+        frozen_func=None
     ):
     '''
     Predict a image using Tensorflow lite model.
 
-    interpreter_dict = A dictionary from load_model_tflite()
+    frozen_func = A dictionary from load_model_tflite()
     img = input image
 
     returns, mask output with input shape (height, width, 1)
@@ -80,7 +66,7 @@ def predict_file_tflite(
     img = tf.io.read_file(img)
     img = tf.io.decode_jpeg(img, channels=3)
 
-    return predict_tflite(img, interpreter_dict)
+    return predict_trt(img, frozen_func)
 
 def main():
     '''
@@ -90,11 +76,13 @@ def main():
     '''
 
     mem_allocation()
-    model = load_model('tflite.model')
+    model = load_model('./trt_model')
     pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
 
     # TODO : Gets DEBUG value from argument
     DEBUG = True
+    # TODO : Gets Num of classes from argument
+    N_CLASSES = 36
 
     capture_time = 0
     output_process_time = 0
@@ -114,12 +102,12 @@ def main():
                 shutil.copy('taken.jpg', '/var/www/html/taken.jpg')
                 
                 t = time.time()
-                ret = predict_tflite(img, model)
+                ret = predict_trt(img, model)
                 prediction_time = time.time() - t
                 print('Predict Time: ', prediction_time)
 
                 t = time.time()
-                probability = get_full_probability(ret, 32) 
+                probability = get_full_probability(ret, N_CLASSES)
                 write_probability_table_xml(probability, label_name_n_code)
                 shutil.copy('probability.xml', '/var/www/html/probability.xml')
 
@@ -133,7 +121,7 @@ def main():
                 print('Average: ', total / i)
             else:
                 img = video_stream.get_frame(pipe)
-                ret = predict_tflite(img, model)
+                ret = predict_trt(img, model)
             
             # TODO : Get a section of prediction, calculate the percentage of sidewalk and call buzzer function if its higher than .7
 
