@@ -6,6 +6,7 @@ from label import label_pixel, label_name_n_code
 from mask_beautifier import colorize_mask
 from probability import write_probability_table_xml, get_full_probability
 import signal
+import os
 
 def mem_allocation():
     phy = tf.config.list_physical_devices('GPU')
@@ -18,7 +19,6 @@ def mem_allocation():
         assert 'GPU Device not found'
 
 def load_model(model_path: str):
-    #mem_allocation()
     interpreter = tf.lite.Interpreter(model_path)
     interpreter.allocate_tensors()
 
@@ -62,8 +62,7 @@ def predict_tflite(
     interpreter.invoke()
     img = interpreter.get_tensor(output_details[0]['index'])
     img = tf.argmax(img, axis=-1)
-    img = tf.expand_dims(img, axis=-1)
-    return img[0]
+    return img
 
 def predict_file_tflite(
         img: str,
@@ -83,18 +82,11 @@ def predict_file_tflite(
     return predict_tflite(img, interpreter_dict)
 
 def main():
-    '''
-    Start the Capture-and-determine loop
-
-    DEBUG=[1 or 0] to see the process of loop.
-    '''
-
     mem_allocation()
     model = load_model('tflite.model')
     pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
 
-    # TODO : Gets DEBUG value from argument
-    DEBUG = True
+    DEBUG = True if os.getenv('IS_DEBUG_MODE') == 1 else False
 
     capture_time = 0
     output_process_time = 0
@@ -119,7 +111,7 @@ def main():
                 print('Predict Time: ', prediction_time)
 
                 t = time.time()
-                probability = get_full_probability(ret, 32) 
+                probability = get_full_probability(ret, len(label_name_n_code)) 
                 write_probability_table_xml(probability, label_name_n_code)
                 shutil.copy('probability.xml', '/var/www/html/probability.xml')
 
