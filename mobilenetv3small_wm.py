@@ -253,7 +253,11 @@ class SegmentationHead(tf.keras.layers.Layer):
         )
 
         x = tf.keras.layers.Multiply()([x1, x2])
-        x = self.out16_b2_upsamp(x)
+        x = tf.image.resize(
+            x,
+            size=(int(s[1]*2), int(s[2]*2)),
+            method=tf.image.ResizeMethod.BILINEAR
+        )
 
         x = self.out16_conv3(x)
         x3 = self.out8_conv1(out8)
