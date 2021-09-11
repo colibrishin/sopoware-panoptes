@@ -1,5 +1,17 @@
+# Model Exception
 *.model
-__pycache__/
-weights/
-datasets/
+models/
 logs/
+weights/
+
+# Test Exceptions
+*.log
+
+# Dataset Exceptions
+datasets/
+
+# Python
+__pycache__/
+
+# VSCode
+.vscode
