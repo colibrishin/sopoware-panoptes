@@ -1,6 +1,5 @@
 Improvement
 - Monitoring Process needed
-- Saperate a branch, demo version and batch version
 
 Refactoring
 - tflite_model.py
@@ -13,17 +12,14 @@ Requirement
     - Add GPIO, buzzer module
 
     Dataset
-    - Record a video
-    - Pick some images from video
+    - Record driving, get images
     - Label the images
 
 TODO
 - tflite_model.py (Argument and attatching modules)
-- visualize.py (In refactoring phase)
 
 Tweak
 - Experiment to change MobileNetV3 small model to large model
-- Change resolution to 640x480 -> 1280x720
 
 Consideration
 - make a python package
