@@ -9,15 +9,12 @@ from PIL import Image
 
 import time
 import shutil
-import signal
+import signal, sys
 import os
 import threading
 
-capture_time = 0
-output_process_time = 0
-prediction_time = 0
-i = 0
-total = 0
+# Initialize Camera
+pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
 
 def load_model(model_path: str):
     model = TrtModel(model_path)
@@ -49,7 +46,23 @@ def predict_trt(
     img = np.reshape(img, (1, img.shape[1], img.shape[2], 1))
     return img[0]
 
-def main_loop(pipe, running):
+def print_time(cap, pred, out, avg):
+    try:
+        interval = 2
+        while True:
+            print('Updating in ', interval, ' seconds')
+            print('Capture Time: ', cap())
+            print('Prediction Time: ', pred())
+            print('Processing Time: ', out())
+            print('Average Time: ', avg())
+            time.sleep(interval)
+            os.system('clear')
+    except KeyboardInterrupt:
+        raise e
+
+def main():
+    global pipe
+
     '''
     Start the Capture-and-determine loop
 
@@ -61,83 +74,66 @@ def main_loop(pipe, running):
 
     print('Model has been loaded...')
     print('Initialized as ', 'Demo' if DEBUG else 'Batch')
+    
+    capture_time = 0
+    output_process_time = 0
+    prediction_time = 0
+    i = 0
+    total = 0
+    average_time = 0
 
-    global capture_time
-    global output_process_time
-    global prediction_time
-    global total
-    global i
+    t_p = threading.Thread(target=print_time, args=(
+        lambda : capture_time,
+        lambda : prediction_time,
+        lambda : output_process_time,
+        lambda : average_time))
+    
+    t_p.setDaemon(True)
+    t_p.start()
 
+    warm = True
     img = None
 
     while True:
-        if DEBUG is True:
-            t = time.time()
-            img = video_stream.get_frame(pipe)
-            capture_time = time.time() - t
-            shutil.copy('taken.jpg', '/var/www/html/taken.jpg')
-            
-            t = time.time()
-            ret = predict_trt(img, shape, model)
-            prediction_time = time.time() - t
+        try:
+            if DEBUG is True:
+                t = time.time()
+                img = video_stream.get_frame(pipe)
+                capture_time = time.time() - t
+                shutil.copy('taken.jpg', '/var/www/html/taken.jpg')
+                
+                t = time.time()
+                ret = predict_trt(img, shape, model)
+                prediction_time = time.time() - t
 
-            t = time.time()
-            probability = get_full_probability(ret, len(label_name_n_code))
-            write_probability_table_xml(probability, label_name_n_code)
-            shutil.copy('probability.xml', '/var/www/html/probability.xml')
+                t = time.time()
+                probability = get_full_probability(ret, len(label_name_n_code))
+                write_probability_table_xml(probability, label_name_n_code)
+                shutil.copy('probability.xml', '/var/www/html/probability.xml')
 
-            ret = colorize_mask(ret, label_pixel)
-            Image.fromarray(ret).save('/var/www/html/mask.png')
-            output_process_time = time.time() - t
+                ret = colorize_mask(ret, label_pixel)
+                Image.fromarray(ret).save('/var/www/html/mask.png')
+                output_process_time = time.time() - t
 
-            total = total + capture_time + prediction_time + output_process_time
-            i = i + 1
-        else:
-            img = video_stream.get_frame(pipe)
-            ret = predict_trt(img, shape, model)
-        if running() == False:
+                total = total + capture_time + prediction_time + output_process_time
+                i = i + 1
+
+                average_time = total / i
+            else:
+                img = video_stream.get_frame(pipe)
+                ret = predict_trt(img, shape, model)
+        except Exception as e:
             video_stream.release_pipe(pipe)
-            break
+            raise e
             
         # TODO : Get a section of prediction, calculate the percentage of sidewalk and call buzzer function if its higher than .7
-
-def main():
-    pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
-
-    global capture_time
-    global output_process_time
-    global prediction_time
-    global total
-    global i
-
-    running = True
-    t1 = threading.Thread(target=main_loop, args=(lambda : running, ))
-    t1.start()
-
-    while True:
-        try:
-            if t1.is_alive() == True:
-                os.system('clear')
-                print('Capture Time: ', capture_time)
-                print('Prediction Time: ', prediction_time)
-                print('Processing Time: ', output_process_time)
-                if total > 0 and i > 0:
-                    print('Average Time: ', total / i)
-                time.sleep(2)
-            else:
-                raise Exception('Failed to start the loop')
-        except KeyboardInterrupt as e:
-            running = False
-            video_stream.release_pipe(pipe)
-            print('Wait for worker to finish...')
-            t1.join()
-            raise e
-        except Exception as e:
-            running = False
-            video_stream.release_pipe(pipe)
-            print('Wait for worker to finish...')
-            t1.join()
-            raise e
-
 if __name__ == "__main__":
+    def camera_killer(signal, frame):
+        global pipe
+        print('Got interrupted')
+
+        video_stream.release_pipe(pipe)
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, camera_killer)
     main()
