@@ -234,7 +234,6 @@ class SegmentationHead(tf.keras.layers.Layer):
         self.out16_b2_pool = TFAveragePooling2D(pool_size=avg_pool_kernel, strides=avg_pool_strides)
         self.out16_b2_conv2 = ConvBlock(filters=filters, strides=1, kernel=1, nl='sigmoid', bn=False)
         self.out8_conv1 = ConvBlock(filters=n_classes, kernel=1, strides=1, nl='NO', bn=False)
-        self.out16_b2_upsamp = tf.keras.layers.UpSampling2D(size=(2, 2), interpolation="bilinear")
         self.out16_conv3 = ConvBlock(filters=n_classes, kernel=1, strides=1, nl='NO', bn=False)
         self.final_upsamp = tf.keras.layers.UpSampling2D(size=(8, 8), interpolation="bilinear")
 
