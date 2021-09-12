@@ -13,7 +13,7 @@ def mem_allocation():
     if phy:
         tf.config.experimental.set_virtual_device_configuration(
             phy[0],
-            [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=128)]
+            [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=256)]
         )
     else:
         assert 'GPU Device not found'
@@ -62,7 +62,8 @@ def predict_tflite(
     interpreter.invoke()
     img = interpreter.get_tensor(output_details[0]['index'])
     img = tf.argmax(img, axis=-1)
-    return img
+    img = tf.expand_dims(img, axis=-1)
+    return img[0]
 
 def predict_file_tflite(
         img: str,
@@ -82,11 +83,18 @@ def predict_file_tflite(
     return predict_tflite(img, interpreter_dict)
 
 def main():
+    '''
+    Start the Capture-and-determine loop
+
+    DEBUG=[1 or 0] to see the process of loop.
+    '''
+
     mem_allocation()
     model = load_model('tflite.model')
     pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
 
-    DEBUG = True if os.getenv('IS_DEBUG_MODE') == 1 else False
+    DEBUG = True if os.getenv('IS_DEBUG_MODE') == '1' else False
+    print(DEBUG)
 
     capture_time = 0
     output_process_time = 0
