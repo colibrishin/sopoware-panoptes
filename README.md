@@ -17,9 +17,9 @@ This repository is dedicated to our project, '_A sidewalk warning system for sha
 * Bluetooth Module
 * microSD (At least 16GB ~)
 ### Softwares
-* Tensorflow 2.4.1
+* Tensorflow 2.5.0
 * GStreamer 1.14.5
-* Python 3.8.10
+* Python 3.6.9
     * Pillow
     * python3-gi
     * python3-gst-1.0
