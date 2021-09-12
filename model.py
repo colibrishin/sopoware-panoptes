@@ -204,7 +204,7 @@ def save_model_trt(
             conversion_params = conversion_params._replace(precision_mode="FP16")
         conversion_params = conversion_params._replace(maximum_cached_engines=100)
 
-        save_dir, _ = save_model(model)
+        save_dir, _ = save_model(model, 1)
         converter = trt.TrtGraphConverterV2(input_saved_model_dir=save_dir)
         converter = converter.convert()
         converter.save(save_dir + '_trt')
