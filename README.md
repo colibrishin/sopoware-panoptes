@@ -33,9 +33,9 @@ Clone this repository
 ```
 git clone https://github.com/colibrishin/sopoware-panoptes.git
 ```
-Place the quantized pre-trained Tensorflow lite model into the lite/
+Place the converted TensorRT engine into the trt/
 ```
-cp [quantized pre-trained Tensorflow lite model] [cloned repository directory]/lite/tflite.model
+cp [quantized pre-trained Tensorflow lite model] [cloned repository directory]/trt/trt_model.engine
 ```
 Build the image (On default, image will be built as debug mode.)
 ```
