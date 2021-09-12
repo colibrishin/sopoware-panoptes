@@ -27,6 +27,7 @@ This repository is dedicated to our project, '_A sidewalk warning system for sha
 
 ## Documentation
 * [Training](https://colab.research.google.com/drive/1rTYmXW5S9tPD-pBJHBiGGSeT_n3EQumC?usp=sharing)
+* [Convert from Tenorflow Model to TensorRT](https://colab.research.google.com/drive/1Ow65KbqCK4A6_Znghwe02rgTau4tImsX?usp=sharing)
 
 ## Installation
 Clone this repository
