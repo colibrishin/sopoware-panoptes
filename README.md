@@ -17,9 +17,9 @@ This repository is dedicated to our project, '_A sidewalk warning system for sha
 * Bluetooth Module
 * microSD (At least 16GB ~)
 ### Softwares
-* Tensorflow 2.4.1
+* Tensorflow 2.5.0
 * GStreamer 1.14.5
-* Python 3.8.10
+* Python 3.6.9
     * Pillow
     * python3-gi
     * python3-gst-1.0
@@ -27,15 +27,16 @@ This repository is dedicated to our project, '_A sidewalk warning system for sha
 
 ## Documentation
 * [Training](https://colab.research.google.com/drive/1rTYmXW5S9tPD-pBJHBiGGSeT_n3EQumC?usp=sharing)
+* [Convert from Tenorflow Model to TensorRT](https://colab.research.google.com/drive/1Ow65KbqCK4A6_Znghwe02rgTau4tImsX?usp=sharing)
 
 ## Installation
 Clone this repository
 ```
 git clone https://github.com/colibrishin/sopoware-panoptes.git
 ```
-Place the quantized pre-trained Tensorflow lite model into the lite/
+Place the converted TensorRT engine into the trt/
 ```
-cp [quantized pre-trained Tensorflow lite model] [cloned repository directory]/lite/tflite.model
+cp [converted TensorRT engine] [cloned repository directory]/trt/trt_model.engine
 ```
 Build the image (On default, image will be built as debug mode.)
 ```
