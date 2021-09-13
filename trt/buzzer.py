@@ -15,4 +15,7 @@ class GPIO():
         self.status = 0 if self.status == 1 else 1
         GPIO.output(self.pin, self.status)
 
+    def release():
+        GPIO.cleanup(self.pin)
+
     
