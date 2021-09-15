@@ -86,7 +86,8 @@ def main():
     model = load_model('tflite.model')
     pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
 
-    DEBUG = True if os.getenv('IS_DEBUG_MODE') == 1 else False
+    DEBUG = True if os.getenv('IS_DEBUG_MODE') == '1' else False
+    print(DEBUG)
 
     capture_time = 0
     output_process_time = 0
