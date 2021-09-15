@@ -3,7 +3,7 @@ import tensorflow as tf
 
 def get_full_probability(mask, n_classes: int):
     probability = tf.zeros((n_classes, 1), dtype=tf.int32)
-    updates = tf.ones_like(mask, dtype=tf.int32)
+    updates = tf.zeros_like(mask, dtype=tf.int32)
 
     probability = tf.tensor_scatter_nd_add(probability, mask, updates)
     

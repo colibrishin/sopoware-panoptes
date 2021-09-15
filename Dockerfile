@@ -1,6 +1,6 @@
 ARG DEBUG
 
-FROM nvcr.io/nvidia/l4t-tensorflow:r32.5.0-tf2.3-py3 AS base
+FROM nvcr.io/nvidia/l4t-tensorflow:r32.6.1-tf2.5-py3 AS base
 ARG DEBUG
 ENV IS_DEBUG_MODE=$DEBUG
 RUN echo $DEBUG

@@ -62,7 +62,8 @@ def predict_tflite(
     interpreter.invoke()
     img = interpreter.get_tensor(output_details[0]['index'])
     img = tf.argmax(img, axis=-1)
-    return img
+    img = tf.expand_dims(img, axis=-1)
+    return img[0]
 
 def predict_file_tflite(
         img: str,
