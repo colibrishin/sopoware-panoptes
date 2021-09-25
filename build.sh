@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #!/bin/bash
 
 git clone https://github.com/NVIDIA/jetson-gpio.git
@@ -14,8 +13,3 @@ rm -rf jetson-gpio
 
 sudo docker-compose build
 sudo docker image prune
-=======
-#! /bin/bash
-sudo docker-compose build --no-cache
-sudo docker image prune
->>>>>>> master

@@ -39,13 +39,8 @@ def train_quick_crossvalidation(
     '''
 
     model = MobileNetV3('', 
-<<<<<<< HEAD
-      n_classes=n_classes,
-      shape=shape,
-=======
       shape=shape,
       n_classes=n_classes, 
->>>>>>> master
       width_multiplier=width_multiplier)
     model.prepare_train(learning_rate)
 
