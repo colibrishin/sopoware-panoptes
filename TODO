@@ -1,0 +1,28 @@
+Improvement
+- Monitoring Process needed
+
+Refactoring
+- tflite_model.py
+
+Requirement
+    Module
+    - Add bluetooth module
+    - Add sidewalk check module
+    - Add android app to communicate
+    - Add GPIO, buzzer module
+
+    Dataset
+    - Record driving, get images
+    - Label the images
+
+TODO
+- tflite_model.py (Argument and attatching modules)
+
+Tweak
+- Experiment to change MobileNetV3 small model to large model
+
+Consideration
+- make a python package
+
+If possible...
+- Make a graph of required memory allocation of model along with hyperparameter alterations

@@ -1,8 +1,13 @@
 import numpy as np
 
 def get_full_probability(mask, n_classes: int):
+<<<<<<< HEAD:trt/probability.py
     probability = np.zeros((n_classes), dtype=np.int32)
     updates = np.ones_like(mask, dtype=np.int32)
+=======
+    probability = tf.zeros((n_classes, 1), dtype=tf.int32)
+    updates = tf.zeros_like(mask, dtype=tf.int32)
+>>>>>>> master:lite/probability.py
 
     np.add.at(probability, mask, updates)
     

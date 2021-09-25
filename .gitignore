@@ -1,6 +1,22 @@
+# Model Exception
 *.model
-__pycache__/
+models/
+logs/
 weights/
+
+# Test Exceptions
+*.log
+
+# Dataset Exceptions
 datasets/
+<<<<<<< HEAD
 logs/
 *.engine
+=======
+
+# Python
+__pycache__/
+
+# VSCode
+.vscode
+>>>>>>> master

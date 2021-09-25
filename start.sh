@@ -1,5 +1,4 @@
 #!/bin/bash
-
 if [ "$IS_DEBUG_MODE" = "1" ]
 then
 	service lighttpd start
