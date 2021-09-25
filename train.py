@@ -39,8 +39,13 @@ def train_quick_crossvalidation(
     '''
 
     model = MobileNetV3('', 
+<<<<<<< HEAD
+      n_classes=n_classes,
+      shape=shape,
+=======
       shape=shape,
       n_classes=n_classes, 
+>>>>>>> master
       width_multiplier=width_multiplier)
     model.prepare_train(learning_rate)
 
@@ -51,7 +56,7 @@ def train_quick_crossvalidation(
         batch_size, 
         buffer_size)
 
-    history, _ = fit(
+    history = fit(
         model, 
         dataset['train'], 
         dataset['valid'], 
@@ -102,7 +107,7 @@ def fit(
     try:
         time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         logdir = os.path.join("logs", time)
-        tensorboard_callback = tf.keras.callbacks.TensorBoard(logdir, histogram_freq=1)
+        tensorboard_callback = tf.keras.callbacks.TensorBoard(logdir, histogram_freq=1, profile_batch = '500,520')
 
         callbacks = [
             tensorboard_callback,
@@ -113,7 +118,7 @@ def fit(
         model_exception_check_if_trainable(model)
 
         if use_exist_weights is not None:
-            model.load_weights(use_exist_weights)
+            model.load_weights_to_model(use_exist_weights)
 
         steps_per_epoch = train_size // batch_size
         validation_steps = valid_size // batch_size
@@ -159,4 +164,3 @@ def evaluate_test(
         return history
     except Exception as e:
         raise Exception('Failed to start evaluation. ', e)
-

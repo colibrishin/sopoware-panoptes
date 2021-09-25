@@ -4,5 +4,5 @@ then
 	service lighttpd start
 fi
 
-cd $SOPOWARE_DIR/lite
-python3 ./tflite_model.py
+cd $SOPOWARE_DIR/trt
+python3 ./trt_model.py

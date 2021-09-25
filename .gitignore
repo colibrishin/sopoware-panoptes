@@ -9,6 +9,8 @@ weights/
 
 # Dataset Exceptions
 datasets/
+logs/
+*.engine
 
 # Python
 __pycache__/
