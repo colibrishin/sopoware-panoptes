@@ -1,22 +1,24 @@
 Improvement
-- Monitoring Process needed
-
-Refactoring
-- tflite_model.py
+    Monitoring Process needed
 
 Requirement
     Module
     - Add bluetooth module
     - Add sidewalk check module
     - Add android app to communicate
-    - Add GPIO, buzzer module
 
     Dataset
     - Record driving, get images
     - Label the images
 
 TODO
-- tflite_model.py (Argument and attatching modules)
+    trt_model.py 
+        - Argument
+        - attatching modules
+        - Complete the codes for batch mode
+    buzzer.py
+        - Pass Jetson Nano's system GPIO to Docker
+        - do a module test with buzzer model
 
 Tweak
 - Experiment to change MobileNetV3 small model to large model
