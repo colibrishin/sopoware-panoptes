@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_addons as tfa
 from dataset import create_batch_crossvalidation
-from model import MobileNetV3, model_exception_check_if_trainable
+from mobilenetv3.model import MobileNetV3, model_exception_check_if_trainable
 import datetime, os
 
 def train_quick_crossvalidation(

@@ -1,5 +1,5 @@
 import tensorflow as tf
-from model import MobileNetV3, model_exception_check_weights
+from mobilenetv3.model import MobileNetV3, model_exception_check_weights
 
 def predict(
         model : MobileNetV3,

@@ -5,4 +5,10 @@ then
 fi
 
 cd $SOPOWARE_DIR/trt
-python3 ./trt_model.py
+
+if [ "$IS_DEBUG_MODE" = '2 ' ]
+then
+	python3 ./record.py
+else
+	python3 ./trt_model.py
+fi

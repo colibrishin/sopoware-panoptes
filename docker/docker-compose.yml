@@ -10,13 +10,19 @@ services:
                         context: .
                         dockerfile: ./Dockerfile
                         args:
-                                DEBUG: 1 
+                                DEBUG: 1
+                        # Debug
+                        #   0 - No printing, only prediction + determine loop 
+                        #   1 - prediction + determine loop + Debugging results printed + prediction results on port 80
+                        #   2 - Recording mode
                 image: sopoware-panoptes:latest
-                
+
                 # R32 (release), REVISION: 5.1, GCID: 27362550, BOARD: t210ref, EABI: aarch64, DATE: Wed May 19 18:07:59 UTC 2021
                 # docker-compose version is 1.17 if you install it from apt-get
                 # You have to manually set runtime when you run the image.
                 # or, you could just build and install higher version of docker-compose
+                
+                # Because of this, you also cannot just use 'docker-compose up'.
                 
                 #runtime: nvidia works on 1.27.0+
                 #deploy... works on 1.28.0+
