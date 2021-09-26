@@ -36,5 +36,5 @@ def output_conversion(output):
  
    output = tf.argmax(output, axis=-1)
    output = tf.expand_dims(output, axis=-1)
-   return output
+   return output[0]
 
