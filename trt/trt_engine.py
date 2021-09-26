@@ -1,3 +1,6 @@
+# https://stackoverflow.com/questions/59280745/inference-with-tensorrt-engine-file-on-python
+# Credit to O Vuruşkaner
+
 import tensorrt as trt
 import numpy as np
 import os
