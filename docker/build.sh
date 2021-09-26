@@ -12,4 +12,3 @@ cd ../
 rm -rf jetson-gpio
 
 sudo docker-compose build
-sudo docker image prune
