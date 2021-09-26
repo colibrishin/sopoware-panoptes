@@ -1,6 +1,6 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from model import MobileNetV3
+from mobilenetv3.model import MobileNetV3
  
 def display_sample(display_list):
    '''
@@ -17,7 +17,7 @@ def display_sample(display_list):
        plt.axis('off')
    plt.show()
  
-def show_predictions(model : MobileNetV3, dataset : tf.Dataset, num : int):
+def show_predictions(model : MobileNetV3, dataset: tf.data.Dataset, num : int):
    '''
    model - MobileNetV3 model class
    dataset - a Tensorflow Dataset
