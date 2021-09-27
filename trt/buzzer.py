@@ -1,21 +1,21 @@
-import Jetson.GPIO as GPIO
+import Jetson.GPIO as JGPIO
 
 class GPIO():
     def __init__(self, pin: int):
         self.pin = pin
         self.status = 1
-        GPIO.setmode(GPIO.BOARD)
+        JGPIO.setmode(JGPIO.BOARD)
         
         self.setup()
     
     def setup(pin: int):
-        GPIO.setup(pin, GPIO.OUT, inital=GPIO.HIGH)
+        JGPIO.setup(pin, JGPIO.OUT, inital=JGPIO.HIGH)
 
     def toggle():
         self.status = 0 if self.status == 1 else 1
-        GPIO.output(self.pin, self.status)
+        JGPIO.output(self.pin, self.status)
 
     def release():
-        GPIO.cleanup(self.pin)
+        JGPIO.cleanup(self.pin)
 
     
