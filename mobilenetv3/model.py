@@ -1,6 +1,6 @@
 import tensorflow as tf
 import tensorflow_addons as tfa
-from mobilenetv3small_wm import MobileNetV3SmallSegmentation as MNV3
+from .mobilenetv3small_wm import MobileNetV3SmallSegmentation as MNV3
 import datetime
 
 from tensorflow.python.compiler.tensorrt import trt_convert as trt
