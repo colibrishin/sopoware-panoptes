@@ -295,7 +295,7 @@ def create_batch_crossvalidation(
     valid_size, valid = load_dataset(valid_path, file_extension, shape)
 
     train = make_batch(data=train, buffer_size=buffer_size, batch_size=batch_size, shuffle=True, preprocess=True)
-    valid = make_batch(data=valid, buffer_size=buffer_size, batch_size=batch_size, shuffle=False, preprocess=False)
+    valid = make_batch(data=valid, buffer_size=buffer_size, batch_size=batch_size, shuffle=True, preprocess=False)
 
     dataset = {'train' : train, 'valid' : valid}
 
