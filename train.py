@@ -5,15 +5,18 @@ from mobilenetv3.model import MobileNetV3, model_exception_check_if_trainable
 import datetime, os
 
 def scheduler(epoch, lr):
-  if epoch < 10:
-    return lr
-  else:
+  if lr < 1e-07:
+      return lr
+  if epoch % 9 == 1:
     return lr * tf.math.exp(-0.1)
+  return lr
 
 def train_quick_crossvalidation(
         dataset_name: str,
         file_extension: str,
         n_classes: int=32,
+        road_n: int=32,
+        sidewalk_n: int=36,
         width_multiplier: float=1.25,
         use_exist_weights: str=None,
         shape: tuple=(480, 640),
@@ -32,6 +35,8 @@ def train_quick_crossvalidation(
     dataset_name = Dataset folder name
     file_extension = the extension of input image file
     n_classes = the number of class.
+    road_n = class number of road label, used for calculating IoU
+    sidewalk_n = class number of sidwalk label, used for calculating IoU
     width_multiplier = the multiplier for layers in model
     use_exist_weights = path to exist weights. let it None if you want to create a new weights file.
     shape = the shape of input image, and model.
@@ -48,7 +53,7 @@ def train_quick_crossvalidation(
       shape=shape,
       n_classes=n_classes, 
       width_multiplier=width_multiplier)
-    model.prepare_train(learning_rate)
+    model.prepare_train(learning_rate=learning_rate, road_n=road_n, sidewalk_n=sidewalk_n)
 
     train_size, valid_size, dataset = create_batch_crossvalidation(
         dataset_name, 
@@ -112,7 +117,7 @@ def fit(
 
         callbacks = [
             tensorboard_callback,
-            tf.keras.callbacks.LearningRateScheduler(scheduler, verbose=verbose),
+            #tf.keras.callbacks.LearningRateScheduler(scheduler, verbose=verbose),
             tf.keras.callbacks.ModelCheckpoint('./weights/' + time + '/best_weights', verbose=verbose, save_best_only=save_best_only, save_weights_only=save_weights_only)
         ]
 
@@ -132,10 +137,11 @@ def fit(
             validation_steps=validation_steps,
             callbacks=callbacks
         )
+        model._is_model_trained = True
 
         return history
     except Exception as e:
-        raise Exception('Faild to start training. ', e)
+        raise Exception('Failed to start training. ', e)
 
 def evaluate_test(
     model: MobileNetV3,

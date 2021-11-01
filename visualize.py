@@ -1,7 +1,9 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from mobilenetv3.model import MobileNetV3
- 
+import imgviz
+from PIL import Image
+
 def display_sample(display_list):
    '''
    display_list - a list of length of 3, consist of with original image, true mask and mask prediction
@@ -23,9 +25,23 @@ def show_predictions(model : MobileNetV3, dataset: tf.data.Dataset, num : int):
    dataset - a Tensorflow Dataset
    num - a integer value how many images function would take from datasets
    '''
+   palette = imgviz.label_colormap(model.n_classes)[0:]
+
    for x, y in dataset.take(num):
        y_p = model.predict(x)
-       display_sample([x[0], y[0], output_conversion(y_p)])
+       y_p = output_conversion(y_p)
+       y_p = tf.squeeze(y_p).numpy().astype('uint8')
+
+       y_p = Image.fromarray(y_p).convert('P')
+       y_p.putpalette(palette)
+       y_p = y_p.convert("RGB")
+
+       y_t = tf.squeeze(y[0]).numpy().astype('uint8')
+       y_t = Image.fromarray(y_t).convert('P')
+       y_t.putpalette(palette)
+       y_t = y_t.convert('RGB')
+
+       display_sample([x[0], y_t, y_p])
  
 def output_conversion(output):
    '''

@@ -2,6 +2,7 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 from .mobilenetv3small_wm import MobileNetV3SmallSegmentation as MNV3
 import datetime
+from .util.iou import IoU, RoadIoU, SidewalkIoU
 
 from tensorflow.python.compiler.tensorrt import trt_convert as trt
 
@@ -51,6 +52,7 @@ class MobileNetV3():
         self._make_model(self.n_classes, self.width_multiplier, self.shape, self.avg_pool_kernel, self.avg_pool_strides, self.axis)
         self._is_weights_loaded = False
         self._is_model_train_ready = False
+        self._is_model_trained = False
 
         if weights_path != '':
             self.load_weights_to_model(weights_path)
@@ -81,20 +83,20 @@ class MobileNetV3():
         except Exception as e:
             raise Exception('Failed to compile model. ', e)
     
-    def prepare_train(self, learning_rate=5e-04):
+    def prepare_train(self, sidewalk_n: int, road_n: int, learning_rate=5e-04):
         '''
         Set Optimizer and Loss function to model
         (Uses RMSProp, MovingAverage, SparseCategoricalCrossEntropy)
 
         learning_rate = Learning rate
         '''
-        opt = tf.keras.optimizers.RMSprop(learning_rate=learning_rate, momentum=0.9)
+        opt = tf.keras.optimizers.Adam(learning_rate=learning_rate)
         opt = tfa.optimizers.MovingAverage(opt, average_decay=0.9999)
 
         self.model.compile(
             optimizer=opt,
             loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-            metrics=[tf.keras.metrics.SparseTopKCategoricalAccuracy(k=1)]
+            metrics=[tf.keras.metrics.SparseTopKCategoricalAccuracy(k=1), IoU(self.n_classes), RoadIoU(road_n), SidewalkIoU(sidewalk_n)]
         )
         self._is_model_train_ready = True
     
@@ -173,7 +175,8 @@ def save_model(model: MobileNetV3, batch_size=None):
     model = pre-compiled model
     '''
     try:
-        model_exception_check_weights(model)
+        if not model._is_model_trained:
+            model_exception_check_weights(model)
         time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         save_dir = './models/model-' + time
         model._save_model(save_dir, batch_size=batch_size)

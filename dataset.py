@@ -96,7 +96,6 @@ def parse_png(image_filename: str):
     images = tf.image.convert_image_dtype(images, tf.uint8)
 
     mask_pat = set_directory_extension(image_filename, 'labels', '')
-
     masks = pil_load_img(mask_pat)
 
     return (images, masks)
@@ -114,7 +113,6 @@ def parse_jpg(image_filename: str):
     images = tf.image.convert_image_dtype(images, tf.uint8)
 
     mask_pat = set_directory_extension(image_filename, 'labels', 'png')
-
     masks = pil_load_img(mask_pat)
 
     return (images, masks)
@@ -166,7 +164,7 @@ def preprocess_dataset_train(x, y):
     '''
 
     images = tf.image.resize(x, SHAPE)
-    masks = tf.image.resize(y, SHAPE)
+    masks = tf.image.resize(y, SHAPE, method='nearest')
 
     
     # You can customize here easily. flip upside down, crop, pad etc.
@@ -198,7 +196,16 @@ def preprocess_dataset_valid(x, y):
     masks = y
 
     images = tf.image.resize(images, SHAPE)
-    masks = tf.image.resize(masks, SHAPE)
+    masks = tf.image.resize(masks, SHAPE, method='nearest')
+
+    # You can customize here easily. flip upside down, crop, pad etc.
+    if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) >= 5e-1:
+        images = tf.image.flip_left_right(images)
+        masks = tf.image.flip_left_right(masks)
+        
+    #if tf.random.uniform(shape=[], minval=0.0, maxval=1.0) >= 5e-1:
+    #    images = tf.image.flip_up_down(images)
+    #    masks = tf.image.flip_up_down(masks)
 
     images = tf.cast(images, tf.float32) / 255.0
 
@@ -295,7 +302,7 @@ def create_batch_crossvalidation(
     valid_size, valid = load_dataset(valid_path, file_extension, shape)
 
     train = make_batch(data=train, buffer_size=buffer_size, batch_size=batch_size, shuffle=True, preprocess=True)
-    valid = make_batch(data=valid, buffer_size=buffer_size, batch_size=batch_size, shuffle=True, preprocess=False)
+    valid = make_batch(data=valid, buffer_size=buffer_size, batch_size=batch_size, shuffle=False, preprocess=True)
 
     dataset = {'train' : train, 'valid' : valid}
 
