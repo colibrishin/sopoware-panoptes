@@ -15,11 +15,11 @@ def write_percentage_table_xml(percentage_table, labels: list, hex_colors: list)
     section_start = '<item>'
     section_end = '</item>'
 
-    for n,  in enumerate(zip(percentage_table, labels, hex_colors)):
-        percentage, label, hex_color = i
+    for n, item in enumerate(zip(percentage_table, labels, hex_colors)):
+        percentage, label, hex_color = item
         name = '<name>' + label + '</name>'
         color = '<color>' + hex_color + '</color>'
-        percentage = '<percentage>' + str(percent) + '</percentage>'
+        percentage = '<percentage>' + str(percentage) + '</percentage>'
         body = body + section_start + name + color + percentage + section_end
 
     output = start_tag + body + end_tag

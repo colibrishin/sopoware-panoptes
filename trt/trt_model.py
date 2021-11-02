@@ -14,11 +14,10 @@ import threading
 
 # Initialize the labels and colors. 
 COLOR_SHIFT = 0
-with open('./trt/labels.txt', 'r') as f:
+with open('./labels.txt', 'r') as f:
     labels = f.read().splitlines()
 
-colors = np.load('./trt/color_code.npy')
-hex_colors = rgb_to_hex(colors)
+colors = np.load('./color_code.npy')
 
 def rgb_to_hex(rgb: list):
     code = []
@@ -28,6 +27,9 @@ def rgb_to_hex(rgb: list):
                 assert 'Color code out of range'
         code.append('#%02x%02x%02x' % i)
     return code
+colors = [tuple(color) for color in colors]
+hex_colors = rgb_to_hex(colors)
+
 
 # Initialize Camera
 pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
