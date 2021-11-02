@@ -21,8 +21,6 @@ RUN apt-get install -y python3-gi python3-gst-1.0 python3-pil
 RUN apt-get install -y libglib2.0-dev
 RUN pip3 install bluepy
 
-RUN pip3 install imgviz
-
 RUN pip3 install Jetson.GPIO
 
 FROM base AS runtype_1

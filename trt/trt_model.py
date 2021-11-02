@@ -1,5 +1,4 @@
 import video_stream
-import imgviz
 from mask_beautifier import colorize_mask
 from percentage import write_percentage_table_xml, get_full_percentage
 from trt_engine import TrtModel
@@ -18,7 +17,7 @@ COLOR_SHIFT = 0
 with open('./trt/labels.txt', 'r') as f:
     labels = f.read().splitlines()
 
-colors = imgviz.label_colormap(len(labels))[COLOR_SHIFT:]
+colors = np.load('./trt/color_code.npy')
 hex_colors = rgb_to_hex(colors)
 
 def rgb_to_hex(rgb: list):
