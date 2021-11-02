@@ -40,7 +40,6 @@ cp [converted TensorRT engine] [cloned repository directory]/trt/trt_model.engin
 ```
 Build the image (On default, image will be built as debug mode.)
 ```
-cd ./docker
 chmod +x build.sh
 sh build.sh
 ```
