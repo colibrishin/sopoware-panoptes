@@ -1,7 +1,7 @@
 import video_stream
-from label import label_pixel, label_name_n_code
+import imgviz
 from mask_beautifier import colorize_mask
-from probability import write_probability_table_xml, get_full_probability
+from percentage import write_percentage_table_xml, get_full_percentage
 from trt_engine import TrtModel
 
 import numpy as np
@@ -12,6 +12,23 @@ import shutil
 import signal, sys
 import os
 import threading
+
+# Initialize the labels and colors. 
+COLOR_SHIFT = 0
+with open('./trt/labels.txt', 'r') as f:
+    labels = f.read().splitlines()
+
+colors = imgviz.label_colormap(len(labels))[COLOR_SHIFT:]
+hex_colors = rgb_to_hex(colors)
+
+def rgb_to_hex(rgb: list):
+    code = []
+    for i in rgb:
+        for j in i:
+            if j < 0 or j > 255:
+                assert 'Color code out of range'
+        code.append('#%02x%02x%02x' % i)
+    return code
 
 # Initialize Camera
 pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
@@ -41,7 +58,7 @@ def predict_trt(
 
     img = np.reshape(img, (1, input_shape[1], input_shape[2], input_shape[3]))
     img = engine(img, 1)
-    img = np.reshape(img, (1, input_shape[1], input_shape[2], len(label_name_n_code)))
+    img = np.reshape(img, (1, input_shape[1], input_shape[2], len(labels)))
     img = np.argmax(img, axis=-1)
     img = np.reshape(img, (1, img.shape[1], img.shape[2], 1))
     return img[0]
@@ -107,11 +124,11 @@ def main():
                 prediction_time = time.time() - t
 
                 t = time.time()
-                probability = get_full_probability(ret, len(label_name_n_code))
-                write_probability_table_xml(probability, label_name_n_code)
-                shutil.copy('probability.xml', '/var/www/html/probability.xml')
+                percentage = get_full_percentage(ret, len(labels))
+                write_percentage_table_xml(percentage, labels, hex_colors)
+                shutil.copy('percentage.xml', '/var/www/html/percentage.xml')
 
-                ret = colorize_mask(ret, label_pixel)
+                ret = colorize_mask(ret, colors)
                 Image.fromarray(ret).save('/var/www/html/mask.png')
                 output_process_time = time.time() - t
 

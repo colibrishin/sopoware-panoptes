@@ -41,9 +41,9 @@
                 var parser = new DOMParser();
                 var content = '';
                 var xml, item, tr_body;
-                var name, color, probability;
+                var name, color, percentage;
 
-                content = await xmlReq(document.location.href + '/probability.xml');
+                content = await xmlReq(document.location.href + '/percentage.xml');
                 xml = parser.parseFromString(content, "text/xml");
                 
                 item = xml.getElementsByTagName("item");
@@ -57,12 +57,12 @@
                     color.appendChild(document.createTextNode("\u25a0"))
                     color.style.color = item[i].childNodes[1].innerHTML;
                     color.style.fontSize = 20;
-                    probability = document.createElement('td');
-                    probability.appendChild(document.createTextNode(item[i].childNodes[2].innerHTML))
+                    percentage = document.createElement('td');
+                    percentage.appendChild(document.createTextNode(item[i].childNodes[2].innerHTML))
                     
                     tr_body.appendChild(name);
                     tr_body.appendChild(color);
-                    tr_body.appendChild(probability);
+                    tr_body.appendChild(percentage);
                     document.getElementById("result").appendChild(tr_body)
                 }
             }
@@ -104,7 +104,7 @@
                             Color
                         </th>
                         <th>
-                            Probability
+                            percentage
                         </th>
                     </tr>
                 </thead>
