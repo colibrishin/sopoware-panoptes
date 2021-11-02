@@ -209,7 +209,7 @@ def save_model_trt(
 
         save_dir, _ = save_model(model, 1)
         converter = trt.TrtGraphConverterV2(input_saved_model_dir=save_dir)
-        converter = converter.convert()
+        converter.convert()
         converter.save(save_dir + '_trt')
         
         return save_dir, model
