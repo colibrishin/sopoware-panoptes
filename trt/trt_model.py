@@ -17,8 +17,7 @@ COLOR_SHIFT = 0
 with open('./labels.txt', 'r') as f:
     labels = f.read().splitlines()
 
-colors = np.load('./color_code.npy')
-
+colors = np.load('./color_code.npy').tolist()
 def rgb_to_hex(rgb: list):
     code = []
     for i in rgb:
@@ -29,7 +28,6 @@ def rgb_to_hex(rgb: list):
     return code
 colors = [tuple(color) for color in colors]
 hex_colors = rgb_to_hex(colors)
-
 
 # Initialize Camera
 pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
@@ -127,6 +125,7 @@ def main():
                 
                 t = time.time()
                 ret = predict_trt(img, shape, model)
+                print(ret)
                 prediction_time = time.time() - t
 
                 t = time.time()
