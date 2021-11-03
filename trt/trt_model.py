@@ -117,6 +117,11 @@ def main():
             if DEBUG is True:
                 t = time.time()
                 img = video_stream.get_frame(pipe)
+                
+                img = Image.fromarray(img)
+                width, height = img.size
+                img = img.crop((0, (width/2) + 75, width, height))
+
                 capture_time = time.time() - t
                 shutil.copy('taken.jpg', '/var/www/html/taken.jpg')
                 
@@ -130,7 +135,9 @@ def main():
                 shutil.copy('percentage.xml', '/var/www/html/percentage.xml')
 
                 ret = colorize_mask(ret, colors)
-                Image.fromarray(ret).save('/var/www/html/mask.png')
+                ret = Image.fromarray(ret)
+                ret = ret.resize((width, height))
+                ret.save('/var/www/html/mask.png')
                 output_process_time = time.time() - t
 
                 total = total + capture_time + prediction_time + output_process_time
