@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone https://github.com/NVIDIA/jetson-gpio.git
+git clone https://github.com/Heerpa/jetson-gpio
 cd ./jetson-gpio
 sudo groupadd -f -r gpio
 sudo usermod -a -G gpio ${USER}

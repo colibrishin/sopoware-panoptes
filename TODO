@@ -7,10 +7,6 @@ Requirement
     - Add sidewalk check module
     - Add android app to communicate
 
-    Dataset
-    - Record driving, get images
-    - Label the images
-
 TODO
     trt_model.py 
         - Argument
@@ -19,9 +15,6 @@ TODO
     buzzer.py
         - Pass Jetson Nano's system GPIO to Docker
         - do a module test with buzzer model
-
-Tweak
-- Experiment to change MobileNetV3 small model to large model
 
 Consideration
 - make a python package

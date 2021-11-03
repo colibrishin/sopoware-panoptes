@@ -121,6 +121,7 @@ def main():
                 img = Image.fromarray(img)
                 width, height = img.size
                 img = img.crop((0, (width/2) + 75, width, height))
+                img = np.array(img)
 
                 capture_time = time.time() - t
                 shutil.copy('taken.jpg', '/var/www/html/taken.jpg')
