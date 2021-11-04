@@ -1,5 +1,3 @@
-sudo docker run -it -d --runtime nvidia -p 80:80 -v /tmp/argus_socket:/tmp/argus_socket -v /tmp/argus_socket:/tmp/argus_socket -v /etc/udev/rules.d/:/etc/udev/rules.d -v /dev:/dev -v /sys/class/gpio:/sys/class/gpio -v /dev/gpiochip0:/dev/gpiochip0 -v /dev/gpiochip1:/dev/gpiochip1 sopoware-panoptes
-
 version: "3"
 services:
         sopoware-panoptes:
