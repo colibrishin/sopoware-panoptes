@@ -18,7 +18,7 @@ RUN apt-get install -y gstreamer1.0-tools gstreamer1.0-alsa gstreamer1.0-plugins
 RUN apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-good1.0-dev libgstreamer-plugins-bad1.0-dev
 RUN apt-get install -y python3-gi python3-gst-1.0 python3-pil
 
-RUN apt-get install -y libglib2.0-dev
+RUN apt-get install -y libglib2.0-dev git
 RUN pip3 install bluepy
 
 RUN pip3 install git+https://github.com/Heerpa/jetson-gpio
