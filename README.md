@@ -45,7 +45,7 @@ sh build.sh
 ```
 Start the container
 ```
-sudo docker run -it -d --runtime nvidia -p 80:80 -v /tmp/argus_socket:/tmp/argus_socket sopoware-panoptes
+sudo docker run -it -d --runtime nvidia -p 80:80 -v /tmp/argus_socket:/tmp/argus_socket -v /etc/udev/rules.d/:/etc/udev/rules.d -v /dev:/dev -v /sys/class/gpio:/sys/class/gpio -v /dev/gpiochip0:/dev/gpiochip0 -v /dev/gpiochip1:/dev/gpiochip1 sopoware-panoptes
 ```
 If it's working correctly and if it is built as debug mode, you can retrieve the prediction monitoring by accessing the device IP address on port 80 in HTML format.
 
@@ -56,10 +56,17 @@ TODO
 
 ## Cite
 
-CamVid:
-> Gabriel, Jourdan & Shotton, Jamie & Fauqueur, Julien & Cipolla, Roberto. (2008). “Segmentation and Recognition Using Structure from Motion Point Clouds”. 5302. 44-57. 10.1007/978-3-540-88682-2_5. 
-
-> Brostow, G., J. Fauqueur and R. Cipolla. “Semantic object classes in video: A high-definition ground truth database.” Pattern Recognit. Lett. 30 (2009): 88-97.
+Labelme :
+```
+@misc{labelme2016,
+  author =       {Kentaro Wada},
+  title =        {{labelme: Image Polygonal Annotation with Python}},
+  howpublished = {\url{https://github.com/wkentaro/labelme}},
+  year =         {2016}
+}
+```
 
 MobileNetV3 :
-> A. Howard, M. Sandler, G. Chu, L. Chen, Bo Chen, M. Tan, W. Wang, Y. Zhu, R. Pang, V. Vasudevan, Quoc V. Le, H. Ada, "Searching for MobileNetV3," arXiv:1905.02244 [cs.CV] 
+```
+A. Howard, M. Sandler, G. Chu, L. Chen, Bo Chen, M. Tan, W. Wang, Y. Zhu, R. Pang, V. Vasudevan, Quoc V. Le, H. Ada, "Searching for MobileNetV3," arXiv:1905.02244 [cs.CV] 
+```
