@@ -7,11 +7,12 @@ services:
                         - "80:80"
                 container_name: sopoware-panoptes
                 volumes: 
-                        - /tmp/argus_socket:/tmp/argus_socket 
-                        - /etc/udev/rules.d/:/etc/udev/rules.d 
-                        - /dev:/dev 
-                        - /sys/class/gpio:/sys/class/gpio 
-                        - /dev/gpiochip0:/dev/gpiochip0 
+                        - /tmp/argus_socket:/tmp/argus_socket
+                        - /etc/udev/rules.d/:/etc/udev/rules.d
+                        - /dev:/dev
+                        - /sys/class/gpio:/sys/class/gpio
+                        - /sys/devices:/sys/devices
+                        - /dev/gpiochip0:/dev/gpiochip0
                         - /dev/gpiochip1:/dev/gpiochip1
                 build: 
                         context: .
