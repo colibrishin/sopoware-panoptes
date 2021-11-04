@@ -21,7 +21,7 @@ RUN apt-get install -y python3-gi python3-gst-1.0 python3-pil
 RUN apt-get install -y libglib2.0-dev git
 RUN pip3 install bluepy
 
-RUN pip3 install git+https://github.com/Heerpa/jetson-gpio
+RUN pip3 install git+https://github.com/Heerpa/jetson-gpio 
 
 FROM base AS runtype_1
 WORKDIR ${SOPOWARE_DIR}
