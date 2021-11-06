@@ -6,10 +6,8 @@ services:
                 container_name: sopoware-panoptes
                 volumes: 
                         - /tmp/argus_socket:/tmp/argus_socket
-                        - /etc/udev/rules.d/:/etc/udev/rules.d
-                        - /dev:/dev
-                        - /sys/class/gpio:/sys/class/gpio
-                        - /sys/devices:/sys/devices
+                        - /sys:/sys
+                devices:
                         - /dev/gpiochip0:/dev/gpiochip0
                         - /dev/gpiochip1:/dev/gpiochip1
                 build: 
@@ -17,18 +15,25 @@ services:
                         dockerfile: ./Dockerfile
                         args:
                                 DEBUG: 1
+                                COLOR_SHIFT: 0
+                                GPIO_PIN: 31
+                                SIDEWALK_CLASS: 36
                         # Debug
                         #   0 - No printing, only prediction + determine loop 
                         #   1 - prediction + determine loop + Debugging results printed + prediction results on port 80
                         #   2 - Recording mode
                 image: sopoware-panoptes:latest
 
+                # TODO : Is there a way to set the --group-add when the
+                #        image is starting with 'docker-compose run'?
+
                 # R32 (release), REVISION: 5.1, GCID: 27362550, BOARD: t210ref, EABI: aarch64, DATE: Wed May 19 18:07:59 UTC 2021
-                # docker-compose version is 1.17 if you install it from apt-get
-                # You have to manually set runtime when you run the image.
-                # or, you could just build and install higher version of docker-compose
-                
-                # Because of this, you also cannot just use 'docker-compose up'.
+                #       docker-compose version is 1.17, If it is installed from apt-get.
+                #       1.17 does not support to set runtime in docker-compose,
+                #       You have to manually set 'runtime' when the image is starting.
+                #       or, You could just build and install recent version of docker-compose
+
+                # Because of this, you cannot just use 'docker-compose up'.
                 
                 #runtime: nvidia works on 1.27.0+
                 #deploy... works on 1.28.0+

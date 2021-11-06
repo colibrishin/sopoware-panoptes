@@ -5,6 +5,7 @@ from trt_engine import TrtModel
 
 import numpy as np
 from PIL import Image
+from .buzzer import GPIO as JGPIO
 
 import time
 import shutil
@@ -13,7 +14,9 @@ import os
 import threading
 
 # Initialize the labels and colors. 
-COLOR_SHIFT = 0
+COLOR_SHIFT = os.environ['COLOR_SHIFT']
+GPIO_PIN = os.environ['BUZZER_PIN']
+
 with open('./labels.txt', 'r') as f:
     labels = f.read().splitlines()
 
@@ -28,6 +31,8 @@ def rgb_to_hex(rgb: list):
     return code
 colors = [tuple(color) for color in colors]
 hex_colors = rgb_to_hex(colors)
+
+GPIO = JGPIO(31)
 
 # Initialize Camera
 pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
@@ -126,7 +131,6 @@ def main():
                 
                 t = time.time()
                 ret = predict_trt(img, shape, model)
-                print(ret)
                 prediction_time = time.time() - t
 
                 t = time.time()
