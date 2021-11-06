@@ -45,7 +45,7 @@ sh build.sh
 ```
 Start the container
 ```
-sudo docker run -it -d --runtime nvidia -p 80:80 -v /tmp/argus_socket:/tmp/argus_socket -v /etc/udev/rules.d/:/etc/udev/rules.d -v /dev:/dev -v /sys/class/gpio:/sys/class/gpio -v /dev/gpiochip0:/dev/gpiochip0 -v /dev/gpiochip1:/dev/gpiochip1 sopoware-panoptes
+sudo docker run --rm -it -d --runtime nvidia -p 80:80 -v /tmp/argus_socket:/tmp/argus_socket -v /sys:/sys --device /dev/gpiochip0:/dev/gpiochip0 --device /dev/gpiochip1:/dev/gpiochip1 --group-add $(cut -d: -f3 < <(getent group gpio)) sopoware-panoptes
 ```
 If it's working correctly and if it is built as debug mode, you can retrieve the prediction monitoring by accessing the device IP address on port 80 in HTML format.
 
