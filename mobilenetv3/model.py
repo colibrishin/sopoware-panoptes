@@ -2,7 +2,7 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 from .mobilenetv3small_wm import MobileNetV3SmallSegmentation as MNV3
 import datetime
-from .util.iou import IoU, RoadIoU, SidewalkIoU
+from .metric.iou import IoU, RoadIoU, SidewalkIoU
 
 from tensorflow.python.compiler.tensorrt import trt_convert as trt
 
@@ -185,7 +185,7 @@ def save_model(model: MobileNetV3, batch_size=None):
         return save_dir, model
     except Exception as e:
         raise Exception('Failed to save model', e)
-        
+
 def save_model_trt(
     model: MobileNetV3,
     float16: bool=True):

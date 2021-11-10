@@ -3,7 +3,6 @@ import numpy as np
 import tensorflow as tf
 
 class IoU(tf.keras.metrics.Metric):
-
   def __init__(self, n_classes: int, name='IoU', **kwargs):
     super(IoU, self).__init__(name=name, **kwargs)
     self.union = self.add_weight(name='iou_union', initializer='zeros')
@@ -34,11 +33,6 @@ class IoU(tf.keras.metrics.Metric):
 
     self.intersection.assign_add(intersection)
     self.union.assign_add(union)
-
-    #if sample_weight is not None:
-    #  sample_weight = tf.cast(sample_weight, self.dtype)
-    #  sample_weight = tf.broadcast_to(sample_weight, values.shape)
-    #  values = tf.multiply(values, sample_weight)
 
   def result(self):
     return self.intersection / self.union
@@ -75,11 +69,6 @@ class RoadIoU(tf.keras.metrics.Metric):
     self.intersection.assign_add(intersection)
     self.union.assign_add(union)
 
-    #if sample_weight is not None:
-    #  sample_weight = tf.cast(sample_weight, self.dtype)
-    #  sample_weight = tf.broadcast_to(sample_weight, values.shape)
-    #  values = tf.multiply(values, sample_weight)
-
   def result(self):
     return self.intersection / self.union
 
@@ -115,11 +104,6 @@ class SidewalkIoU(tf.keras.metrics.Metric):
 
     self.intersection.assign_add(intersection)
     self.union.assign_add(union)
-
-    #if sample_weight is not None:
-    #  sample_weight = tf.cast(sample_weight, self.dtype)
-    #  sample_weight = tf.broadcast_to(sample_weight, values.shape)
-    #  values = tf.multiply(values, sample_weight)
-
+    
   def result(self):
     return self.intersection / self.union
