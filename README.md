@@ -5,9 +5,7 @@
 ###### Dept of Computer Engineering, Daejeon University
 
 ## What is this?
-This project is aiming to prevent a shared kickboard driving on a sidewalk by alerting a driver and using the semantic segmentation to determine if the shared kickboard is on the sidewalk.
-
-This repository is dedicated to our project, '_Edge AI applied sidewalk warning system for public scooter_', includes scripts for training a deep learning model and deploying and running it in Jetson Nano.
+This repository is dedicated to our project, '_Edge AI applied sidewalk warning system for public scooter_', includes scripts for training a deep learning model and deploying and running it in Jetson Nano. the project is aimed to prevent a shared kickboard driving on a sidewalk by alerting a driver and using the semantic segmentation to determine if the shared kickboard is on the sidewalk.
 
 ## Requirements
 ### Necessary hardwares
