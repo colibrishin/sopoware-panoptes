@@ -2,12 +2,10 @@
 # sopoware-panoptes
 #### Team Sopoware
 ###### Yeong-chul Park, Beomsik Shin, Jewoong Yoon
-###### Computer Enginnering, Daejeon University
+###### Dept of Computer Engineering, Daejeon University
 
 ## What is this?
-This project is aiming to prevent a shared kickboard driving on a sidewalk by alerting a driver and using the semantic segmentation to determine if the shared kickboard is on the sidewalk.
-
-This repository is dedicated to our project, '_A sidewalk warning system for shared kickboard using single board computer and deep learning_', includes scripts for training a deep learning model and deploying and running it in Jetson Nano.
+This repository is dedicated to our project, '_Edge AI applied sidewalk warning system for public scooter_', includes scripts for training a deep learning model and deploying and running it in Jetson Nano. the project is aimed to prevent a shared kickboard driving on a sidewalk by alerting a driver and using the semantic segmentation to determine if the shared kickboard is on the sidewalk.
 
 ## Requirements
 ### Necessary hardwares
@@ -47,9 +45,7 @@ Start the container
 ```
 sudo docker run --rm -it -d --runtime nvidia -p 80:80 -v /tmp/argus_socket:/tmp/argus_socket -v /sys:/sys --device /dev/gpiochip0:/dev/gpiochip0 --device /dev/gpiochip1:/dev/gpiochip1 --group-add $(cut -d: -f3 < <(getent group gpio)) sopoware-panoptes
 ```
-If it's working correctly and if it is built as debug mode, you can retrieve the prediction monitoring by accessing the device IP address on port 80 in HTML format.
-
-TODO : Monitoring Process
+If it's working correctly and built as debug mode, you can monitor the model prediction by accessing the device IP address on port 80.
 
 ## Demo
 TODO
@@ -57,16 +53,17 @@ TODO
 ## Cite
 
 Labelme :
+
 ```
 @misc{labelme2016,
-  author =       {Kentaro Wada},
-  title =        {{labelme: Image Polygonal Annotation with Python}},
-  howpublished = {\url{https://github.com/wkentaro/labelme}},
-  year =         {2016}
+   author =       {Kentaro Wada},
+   title =        {{labelme: Image Polygonal Annotation with Python}},
+   howpublished = {\url{https://github.com/wkentaro/labelme}},
+   year =         {2016}
 }
 ```
 
+
 MobileNetV3 :
-```
-A. Howard, M. Sandler, G. Chu, L. Chen, Bo Chen, M. Tan, W. Wang, Y. Zhu, R. Pang, V. Vasudevan, Quoc V. Le, H. Ada, "Searching for MobileNetV3," arXiv:1905.02244 [cs.CV] 
-```
+> A. Howard, M. Sandler, G. Chu, L. Chen, Bo Chen, M. Tan, W. Wang, Y. Zhu, R. Pang, V. Vasudevan, Quoc V. Le, H. Ada, "Searching for MobileNetV3," arXiv:1905.02244 [cs.CV] 
+
