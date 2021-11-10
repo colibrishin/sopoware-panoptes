@@ -1,5 +1,5 @@
 import tensorflow as tf
-import tensorflow_addons as tfa
+#import tensorflow_addons as tfa
 from .mobilenetv3small_wm import MobileNetV3SmallSegmentation as MNV3
 import datetime
 from .util.iou import IoU, RoadIoU, SidewalkIoU
@@ -91,7 +91,7 @@ class MobileNetV3():
         learning_rate = Learning rate
         '''
         opt = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-        opt = tfa.optimizers.MovingAverage(opt, average_decay=0.9999)
+        #opt = tfa.optimizers.MovingAverage(opt, average_decay=0.9999)
 
         self.model.compile(
             optimizer=opt,
@@ -184,34 +184,4 @@ def save_model(model: MobileNetV3, batch_size=None):
         print('Model saved at ' + save_dir)
         return save_dir, model
     except Exception as e:
-        raise Exception('Failed to save model', e)
-
-def save_model_trt(
-    model: MobileNetV3,
-    float16: bool=True):
-    '''
-    Saving model as TensorRT Graph file.
-    Means, model file will be also saved automatically.
-    File will be saved under ./models/model-[time]-trt/
-
-    model = pre-compiled model
-    float16 = Use float16 as weights dtype instead of float32
-    '''
-    
-    save_dir = ''
-
-    try :
-        conversion_params = trt.DEFAULT_TRT_CONVERSION_PARAMS
-        conversion_params = conversion_params._replace(max_workspace_size_bytes=(1<<32))
-        if float16:
-            conversion_params = conversion_params._replace(precision_mode="FP16")
-        conversion_params = conversion_params._replace(maximum_cached_engines=100)
-
-        save_dir, _ = save_model(model, 1)
-        converter = trt.TrtGraphConverterV2(input_saved_model_dir=save_dir)
-        converter.convert()
-        converter.save(save_dir + '_trt')
-        
-        return save_dir, model
-    except Exception as e :
         raise Exception('Failed to save model', e)

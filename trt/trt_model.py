@@ -2,10 +2,11 @@ import video_stream
 from mask_beautifier import colorize_mask
 from percentage import write_percentage_table_xml, get_full_percentage
 from trt_engine import TrtModel
+from determine import determine
 
 import numpy as np
 from PIL import Image
-from .buzzer import GPIO as JGPIO
+from buzzer import GPIO as JGPIO
 
 import time
 import shutil
@@ -15,7 +16,8 @@ import threading
 
 # Initialize the labels and colors. 
 COLOR_SHIFT = os.environ['COLOR_SHIFT']
-GPIO_PIN = os.environ['BUZZER_PIN']
+GPIO_PIN = os.environ['GPIO_PIN']
+SIDEWALK_CLASS = os.environ['SIDEWALK_CLASS']
 
 with open('./labels.txt', 'r') as f:
     labels = f.read().splitlines()
@@ -45,7 +47,7 @@ def load_model(model_path: str):
 
 def predict_trt(
         img,
-        input_shape,
+        input_shape: tuple,
         engine: TrtModel=None,
     ):
     '''
@@ -58,10 +60,12 @@ def predict_trt(
     '''
 
     if img.shape != input_shape[1:3]:
-        img = Image.fromarray(img).resize((input_shape[1], input_shape[2]))
+        img = Image.fromarray(np.uint8(img)).resize((input_shape[1], input_shape[2]))
+        #img = np.transpose(np.asarray(img), [1, 0, 2])
 
+    img = np.asarray(img).astype(np.uint8)
     img = np.reshape(img, (1, input_shape[1], input_shape[2], input_shape[3]))
-    img = engine(img, 1)
+    img = engine(img / 255.0, 1)
     img = np.reshape(img, (1, input_shape[1], input_shape[2], len(labels)))
     img = np.argmax(img, axis=-1)
     img = np.reshape(img, (1, img.shape[1], img.shape[2], 1))
@@ -102,13 +106,13 @@ def main():
     i = 0
     total = 0
     average_time = 0
+    is_sidewalk = False
 
     t_p = threading.Thread(target=print_time, args=(
         lambda : capture_time,
         lambda : prediction_time,
         lambda : output_process_time,
         lambda : average_time))
-    
     t_p.setDaemon(True)
     t_p.start()
 
@@ -119,18 +123,29 @@ def main():
         try:
             if DEBUG is True:
                 t = time.time()
-                img = video_stream.get_frame(pipe)
+                img = video_stream.get_frame(pipe).astype(np.uint8)
                 
                 img = Image.fromarray(img)
                 width, height = img.size
-                img = img.crop((0, (width/2) + 75, width, height))
-                img = np.array(img)
+                img = img.crop((0, (height/2) + 75, width, height))
 
-                capture_time = time.time() - t
+                #img = Image.open('sidewalk2.jpg')
+                #width, height = img.size
+                #img.save('/var/www/html/taken.jpg')
+                #img = img.crop((0, (height/2) + 75, width, height))
+                #width, height = img.size
+                img = np.asarray(img)
+                #capture_time = time.time() - t
                 shutil.copy('taken.jpg', '/var/www/html/taken.jpg')
                 
                 t = time.time()
                 ret = predict_trt(img, shape, model)
+                is_sidewalk = determine(ret, SIDEWALK_CLASS)
+                #if is_sidewalk:
+                #    print('buzzered')
+                #    GPIO.on()
+                #else:
+                #    GPIO.off()
                 prediction_time = time.time() - t
 
                 t = time.time()
@@ -150,17 +165,32 @@ def main():
                 average_time = total / i
             else:
                 img = video_stream.get_frame(pipe)
+
+                img = Image.fromarray(img)
+                width, height = img.size
+                img = img.crop((0, (width/2) + 75, width, height))
+                img = img.resize((224, 224))
+                img = np.array(img)
+
                 ret = predict_trt(img, shape, model)
+                is_sidewalk = determine(ret, SIDEWALK_CLASS)
+                if is_sidewalk:
+                    GPIO.on()
+                else:
+                    GPIO.off()
         except Exception as e:
+            GPIO.off()
+            GPIO.release()
             video_stream.release_pipe(pipe)
             raise e
             
-        # TODO : Get a section of prediction, calculate the percentage of sidewalk and call buzzer function if its higher than .7
 if __name__ == "__main__":
     def camera_killer(signal, frame):
         global pipe
         print('Got interrupted')
 
+        GPIO.off()
+        GPIO.release()
         video_stream.release_pipe(pipe)
         sys.exit(0)
 
