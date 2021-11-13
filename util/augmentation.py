@@ -25,8 +25,10 @@ def rotate_images_voc(path: str, angles: list):
     label_processed_dir = os.path.join(label_root, 'processed')
     image_processed_dir = os.path.join(image_root, 'processed')
 
-    os.mkdir(label_processed_dir) if not os.path.exists(label_processed_dir) else contiue
-    os.mkdir(image_processed_dir) if not os.path.exists(image_processed_dir) else contiue
+    if not os.path.exists(label_processed_dir):
+        os.mkdir(label_processed_dir)
+    if not os.path.exists(image_processed_dir):
+        os.mkdir(image_processed_dir)
 
     labels = glob(os.path.join(label_root, '*.png'))
     images = glob(os.path.join(image_root, '*.jpg'))
