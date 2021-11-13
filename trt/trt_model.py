@@ -71,7 +71,7 @@ def predict_trt(
     img = np.reshape(img, (1, img.shape[1], img.shape[2], 1))
     return img[0]
 
-def print_time(cap, pred, out, avg):
+def print_time(cap, pred, out, avg, ratio, sidewalk):
     try:
         interval = 2
         while True:
@@ -80,6 +80,9 @@ def print_time(cap, pred, out, avg):
             print('Prediction Time: ', pred())
             print('Processing Time: ', out())
             print('Average Time: ', avg())
+            print('Sidewalk Ratio: ', ratio())
+            if sidewalk():
+                print('SIDEWALK DETECTED')
             time.sleep(interval)
             os.system('clear')
     except KeyboardInterrupt:
@@ -106,46 +109,43 @@ def main():
     i = 0
     total = 0
     average_time = 0
+    sidewalk_ratio = 0
     is_sidewalk = False
 
-    t_p = threading.Thread(target=print_time, args=(
-        lambda : capture_time,
-        lambda : prediction_time,
-        lambda : output_process_time,
-        lambda : average_time))
-    t_p.setDaemon(True)
-    t_p.start()
+    if DEBUG:
+        t_p = threading.Thread(target=print_time, args=(
+                        lambda : capture_time,
+                        lambda : prediction_time,
+                        lambda : output_process_time,
+                        lambda : average_time,
+                        lambda : sidewalk_ratio,
+                        lambda : is_sidewalk))
+        t_p.setDaemon(True)
+        t_p.start()
 
-    warm = True
     img = None
 
     while True:
         try:
-            if DEBUG is True:
+            if DEBUG:
                 t = time.time()
                 img = video_stream.get_frame(pipe).astype(np.uint8)
                 
                 img = Image.fromarray(img)
                 width, height = img.size
                 img = img.crop((0, (height/2) + 75, width, height))
-
-                #img = Image.open('sidewalk2.jpg')
-                #width, height = img.size
-                #img.save('/var/www/html/taken.jpg')
-                #img = img.crop((0, (height/2) + 75, width, height))
-                #width, height = img.size
+                width, height = img.size
                 img = np.asarray(img)
-                #capture_time = time.time() - t
+                capture_time = time.time() - t
                 shutil.copy('taken.jpg', '/var/www/html/taken.jpg')
                 
                 t = time.time()
                 ret = predict_trt(img, shape, model)
-                is_sidewalk = determine(ret, SIDEWALK_CLASS)
-                #if is_sidewalk:
-                #    print('buzzered')
-                #    GPIO.on()
-                #else:
-                #    GPIO.off()
+                sidewalk_ratio, is_sidewalk = determine(ret, SIDEWALK_CLASS)
+                if is_sidewalk:
+                    GPIO.on()
+                else:
+                    GPIO.off()
                 prediction_time = time.time() - t
 
                 t = time.time()
@@ -169,7 +169,7 @@ def main():
                 img = Image.fromarray(img)
                 width, height = img.size
                 img = img.crop((0, (width/2) + 75, width, height))
-                img = img.resize((224, 224))
+                width, height = img.size
                 img = np.array(img)
 
                 ret = predict_trt(img, shape, model)
