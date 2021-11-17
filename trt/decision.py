@@ -1,6 +1,6 @@
 import numpy as np
 
-def determine(img: np.array, sidewalk_class: int):
+def decision(img: np.array, sidewalk_class: int):
     img = np.squeeze(img, axis=-1)
 
     img = img[:, int(img.shape[1]/4):int(img.shape[1]/4 * 3)]

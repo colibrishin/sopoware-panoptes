@@ -14,14 +14,17 @@ services:
                         context: .
                         dockerfile: ./Dockerfile
                         args:
-                                DEBUG: 1
+                                MODE: 1
                                 COLOR_SHIFT: 0
                                 GPIO_PIN: 31
                                 SIDEWALK_CLASS: 36
-                        # Debug
+                        
+                        # Mode
                         #   0 - No printing, only prediction + determine loop 
                         #   1 - prediction + determine loop + Debugging results printed + prediction results on port 80
                         #   2 - Recording mode
+                        #   3 - Same as Mode 1, but every camera frames and predictions are saved in ./trt/save/
+
                 image: sopoware-panoptes:latest
 
                 # TODO : Is there a way to set the --group-add when the

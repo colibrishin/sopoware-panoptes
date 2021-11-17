@@ -2,7 +2,7 @@ import video_stream
 from mask_beautifier import colorize_mask
 from percentage import write_percentage_table_xml, get_full_percentage
 from trt_engine import TrtModel
-from determine import determine
+from decision import decision
 
 import numpy as np
 from PIL import Image
@@ -13,6 +13,8 @@ import shutil
 import signal, sys
 import os
 import threading
+
+SAVE_DIR = './save/'
 
 # Initialize the labels and colors. 
 COLOR_SHIFT = os.environ['COLOR_SHIFT']
@@ -61,7 +63,6 @@ def predict_trt(
 
     if img.shape != input_shape[1:3]:
         img = Image.fromarray(np.uint8(img)).resize((input_shape[1], input_shape[2]))
-        #img = np.transpose(np.asarray(img), [1, 0, 2])
 
     img = np.asarray(img).astype(np.uint8)
     img = np.reshape(img, (1, input_shape[1], input_shape[2], input_shape[3]))
@@ -78,7 +79,7 @@ def print_time(cap, pred, out, avg, ratio, sidewalk):
             print('Updating in ', interval, ' seconds')
             print('Capture Time: ', cap())
             print('Prediction Time: ', pred())
-            print('Processing Time: ', out())
+            print('Post-Processing Time from Debugging: ', out())
             print('Average Time: ', avg())
             print('Sidewalk Ratio: ', ratio())
             if sidewalk():
@@ -96,13 +97,24 @@ def main():
 
     DEBUG=[1 or 0] to see the process of loop.
     '''
-
+    # Initialization
+    img = None
     model, shape = load_model('./trt_model.engine')
-    DEBUG = True if os.environ['IS_DEBUG_MODE'] == '1' else False
-
     print('Model has been loaded...')
+
+    # Requested Inference State from Environment Variables
+    DEBUG = True if os.environ['MODE'] == '1' or os.environ['MODE'] == '3' else False
+    if DEBUG:
+        import faulthandler
+        faulthandler.enable()
+
+    SAVE = True if os.environ['MODE'] == '3' else False
+    if SAVE and not os.path.exists(SAVE_DIR):
+        os.mkdir(SAVE_DIR)
+        
     print('Initialized as ', 'Demo' if DEBUG else 'Batch')
     
+    # DEBUG Variables
     capture_time = 0
     output_process_time = 0
     prediction_time = 0
@@ -110,7 +122,6 @@ def main():
     total = 0
     average_time = 0
     sidewalk_ratio = 0
-    is_sidewalk = False
 
     if DEBUG:
         t_p = threading.Thread(target=print_time, args=(
@@ -123,40 +134,56 @@ def main():
         t_p.setDaemon(True)
         t_p.start()
 
-    img = None
+    # State Variable
+    is_sidewalk = False
 
+    # Main Routine
     while True:
         try:
             if DEBUG:
+                # CAPTURE
                 t = time.time()
                 img = video_stream.get_frame(pipe).astype(np.uint8)
                 
                 img = Image.fromarray(img)
                 width, height = img.size
+                img.save('/var/www/html/taken.jpg')
+
+                if SAVE:
+                    img.save('./save/cam_' + str(i) + '.png')
+
                 img = img.crop((0, (height/2) + 75, width, height))
                 width, height = img.size
                 img = np.asarray(img)
                 capture_time = time.time() - t
-                shutil.copy('taken.jpg', '/var/www/html/taken.jpg')
                 
+                # INFERENCE
                 t = time.time()
                 ret = predict_trt(img, shape, model)
-                sidewalk_ratio, is_sidewalk = determine(ret, SIDEWALK_CLASS)
+
+                # DECISION
+                sidewalk_ratio, is_sidewalk = decision(ret, SIDEWALK_CLASS)
                 if is_sidewalk:
                     GPIO.on()
                 else:
                     GPIO.off()
                 prediction_time = time.time() - t
 
+                # META-DATA POST-PROCESSING
                 t = time.time()
                 percentage = get_full_percentage(ret, len(labels))
                 write_percentage_table_xml(percentage, labels, hex_colors)
                 shutil.copy('percentage.xml', '/var/www/html/percentage.xml')
 
+                # INFERENCE RESULT POST-PROCESSING
                 ret = colorize_mask(ret, colors)
                 ret = Image.fromarray(ret)
                 ret = ret.resize((width, height))
                 ret.save('/var/www/html/mask.png')
+
+                if SAVE:
+                    ret.save('./save/mask_' + str(i) + ('b-on' if is_sidewalk else 'b-off') + '.png')
+                
                 output_process_time = time.time() - t
 
                 total = total + capture_time + prediction_time + output_process_time
@@ -164,21 +191,22 @@ def main():
 
                 average_time = total / i
             else:
-                img = video_stream.get_frame(pipe)
-
+                img = video_stream.get_frame(pipe).astype(np.uint8)
+                
                 img = Image.fromarray(img)
                 width, height = img.size
-                img = img.crop((0, (width/2) + 75, width, height))
+                img = img.crop((0, (height/2) + 75, width, height))
                 width, height = img.size
-                img = np.array(img)
+                img = np.asarray(img)
 
                 ret = predict_trt(img, shape, model)
-                is_sidewalk = determine(ret, SIDEWALK_CLASS)
+                is_sidewalk = decision(ret, SIDEWALK_CLASS)
                 if is_sidewalk:
                     GPIO.on()
                 else:
                     GPIO.off()
         except Exception as e:
+            print(e)
             GPIO.off()
             GPIO.release()
             video_stream.release_pipe(pipe)
