@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ "$MODE" = "1" ]
+if [ "$MODE" = "1" ] || [ "$MODE" = "3" ]
 then
 	service lighttpd start
 fi

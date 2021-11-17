@@ -57,6 +57,8 @@ RUN mkdir $SOPOWARE_DIR/capture
 FROM base AS runtype_3
 # DEBUG + SAVE CAMERA & INFERENCE IMAGES MODE
 WORKDIR ${SOPOWARE_DIR}
+RUN apt-get install -y lighttpd iptables
+RUN cp ./demo/index.html /var/www/html/index.lighttpd.html
 
 FROM runtype_${MODE} AS final
 ENTRYPOINT $SOPOWARE_DIR/trt/start.sh

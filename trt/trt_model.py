@@ -144,13 +144,12 @@ def main():
                 # CAPTURE
                 t = time.time()
                 img = video_stream.get_frame(pipe).astype(np.uint8)
+                shutil.copy('taken.jpg', '/var/www/html/taken.jpg')
                 
                 img = Image.fromarray(img)
                 width, height = img.size
-                img.save('/var/www/html/taken.jpg')
-
                 if SAVE:
-                    img.save('./save/cam_' + str(i) + '.png')
+                    shutil.copy('taken.jpg', './save/cam_' + str(i) + '.jpg')
 
                 img = img.crop((0, (height/2) + 75, width, height))
                 width, height = img.size
@@ -191,6 +190,9 @@ def main():
 
                 average_time = total / i
             else:
+                video_stream.release_pipe(pipe)
+                pipe = pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE_WO_FILE)
+
                 img = video_stream.get_frame(pipe).astype(np.uint8)
                 
                 img = Image.fromarray(img)
@@ -207,10 +209,7 @@ def main():
                     GPIO.off()
         except Exception as e:
             print(e)
-            GPIO.off()
-            GPIO.release()
-            video_stream.release_pipe(pipe)
-            raise e
+            camera_killer(None, None)
             
 if __name__ == "__main__":
     def camera_killer(signal, frame):
