@@ -103,13 +103,13 @@ def crop_process_labelme(path: str, x1: float, y1: float, x2: float, y2: float):
 
     for path in paths:
         with open(path, 'r') as f:
-            print('Processing : ', os.path.basename(path))
             tmp = json.load(f)
             i = 0
 
             while True:
                 try:
                     shape = tmp['shapes'][i]
+                    print(i, 'len : ', len(tmp['shapes']))
                     min_x = tmp['imageWidth'] + 1
                     max_x = -1
                     min_y = tmp['imageHeight'] + 1
@@ -122,17 +122,19 @@ def crop_process_labelme(path: str, x1: float, y1: float, x2: float, y2: float):
                         min_y = min(point[1], min_y)
                         max_y = max(point[1], max_y)
 
+                    print(y1, min_y)
+
                     left = (x1 - max_x) > 0
                     right = (x2 - min_x) > 0
                     top = (y1 - max_y) > 0
                     bottom = (y2 - min_y) > 0
 
-                    if top:
-                        # if every points of a shape is out of cutting range,
-                        # then it will not appear in a cropped picture. we don't need this.
-
+                    if top and bottom or left and right:
+                        # if every points of a shape is over cutting position,
+                        # then it will not in the cropped picture. we don't need this.
                         print(tmp['shapes'][i]['label'], max_x, min_x, max_y, min_y)
                         del tmp['shapes'][i]
+                        print('Remove : ', i)
                     else:
                         print('Cliping : ', i)
                         for point in points:
