@@ -127,7 +127,7 @@ def crop_process_labelme(path: str, x1: float, y1: float, x2: float, y2: float):
                     top = (y1 - max_y) > 0
                     bottom = (y2 - min_y) > 0
 
-                    if top and bottom or left and right:
+                    if top:
                         # if every points of a shape is out of cutting range,
                         # then it will not appear in a cropped picture. we don't need this.
 
