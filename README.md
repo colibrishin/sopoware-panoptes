@@ -27,7 +27,12 @@ git clone https://github.com/colibrishin/sopoware-panoptes.git
 ```
 Place the converted TensorRT engine into the trt/
 ```
-cp [converted TensorRT engine] [cloned repository directory]/trt/trt_model.engine
+cp [converted TensorRT engine] [cloned repository directory]/trt/data/trt_model.engine
+```
+If image will be running in debug mode, label of Dataset and palette color code is required. Check Labelme To VOC for more detail.
+```
+cp [Dataset label] [cloned repository directory]/trt/data/labels.txt
+cp [Color code npy] [cloned repository directory]/trt/data/color_codes.npy
 ```
 Build the image (On default, image will be built as debug mode.)
 ```
@@ -36,7 +41,13 @@ sh build.sh
 ```
 Start the container
 ```
-sudo docker run --rm -it -d --runtime nvidia -p 80:80 -v /tmp/argus_socket:/tmp/argus_socket -v /sys:/sys --device /dev/gpiochip0:/dev/gpiochip0 --device /dev/gpiochip1:/dev/gpiochip1 --group-add $(cut -d: -f3 < <(getent group gpio)) sopoware-panoptes
+sudo docker run --ipc host --privileged --rm -it -d \
+                --runtime nvidia --net=host -v /tmp/argus_socket:/tmp/argus_socket \
+                -v /sys:/sys -v /dev/bus/usb:/dev/bus/usb -v /var/run/dbus:/var/run/dbus \
+                -v /var/lib/bluetooth:/var/lib/bluetooth \
+                --device /dev/gpiochip0:/dev/gpiochip0 --device /dev/gpiochip1:/dev/gpiochip1 \
+                --cap-add=SYS_ADMIN --group-add $(cut -d: -f3 < <(getent group gpio)) \
+                --entrypoint /bin/bash sopoware-panoptes
 ```
 If it's working correctly and built as debug mode, you can monitor the model prediction by accessing the device IP address on port 80.
 
