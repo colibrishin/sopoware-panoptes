@@ -8,22 +8,15 @@
 This repository is dedicated to our project, '_Edge AI applied sidewalk warning system for public scooter_', includes scripts for training a deep learning model and deploying and running it in Jetson Nano. the project is aimed to prevent a shared kickboard driving on a sidewalk by alerting a driver and using the semantic segmentation to determine if the shared kickboard is on the sidewalk.
 
 ## Requirements
-### Necessary hardwares
+### Hardware
 * Nvidia Jetson Nano
-* IMX219-77
-* Buzzer (3.3V - 5V)
+* CSI Camera
+* Buzzer
 * Bluetooth Module
-* microSD (At least 16GB ~)
-### Softwares
-* Tensorflow 2.5.0
-* GStreamer 1.14.5
-* Python 3.6.9
-    * Pillow
-    * python3-gi
-    * python3-gst-1.0
-* docker-compose 1.17.1 or later (See docker-compose.yml for more information)
+* microSD (64GB Recommended)
 
 ## Documentation
+* [Labelme to VOC](https://colab.research.google.com/drive/1-gydoon3ROho8mKwXy_VkbxQ-SlxjN1J?usp=sharing)
 * [Training](https://colab.research.google.com/drive/1rTYmXW5S9tPD-pBJHBiGGSeT_n3EQumC?usp=sharing)
 * [Convert from Tenorflow Model to TensorRT](https://colab.research.google.com/drive/1Ow65KbqCK4A6_Znghwe02rgTau4tImsX?usp=sharing)
 
