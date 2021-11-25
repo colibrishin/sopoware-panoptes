@@ -11,8 +11,8 @@ weights/
 datasets/
 logs/
 *.engine
-trt/labels.txt
-trt/color_code.npy
+trt/data/labels.txt
+trt/data/color_code.npy
 
 
 # Python
