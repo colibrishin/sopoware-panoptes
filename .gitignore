@@ -11,6 +11,8 @@ weights/
 datasets/
 logs/
 *.engine
+labels.txt
+color_code.npy
 
 # Python
 __pycache__/
