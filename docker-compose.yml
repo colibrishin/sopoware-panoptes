@@ -1,12 +1,18 @@
 version: "3"
 services:
         sopoware-panoptes:
+                # I really don't wanted to, but for the bluetooth...
+                privileged: true
                 ports:
                         - "80:80"
                 container_name: sopoware-panoptes
                 volumes: 
                         - /tmp/argus_socket:/tmp/argus_socket
                         - /sys:/sys
+                        - /dev/bus/usb:/dev/bus/usb
+                        - /var/run/dbus:/var/run/dbus
+                        - /sys/class/bluetooth:/sys/class/bluetooth
+                        - /var/lib/bluetooth:/var/lib/bluetooth
                 devices:
                         - /dev/gpiochip0:/dev/gpiochip0
                         - /dev/gpiochip1:/dev/gpiochip1

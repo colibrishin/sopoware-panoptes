@@ -1,4 +1,11 @@
 #!/bin/bash
+/etc/init.d/dbus start
+bluetoothd -C &
+sleep 1
+
+hciconfig hci0 piscan
+sdptool add SP
+
 if [ "$MODE" = "1" ] || [ "$MODE" = "3" ]
 then
 	service lighttpd start

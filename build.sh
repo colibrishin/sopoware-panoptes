@@ -11,4 +11,5 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 cd ../
 rm -rf jetson-gpio
 
+sudo systemctl disable bluetooth
 sudo docker-compose build
