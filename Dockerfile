@@ -36,7 +36,7 @@ RUN chmod +x ./trt/start.sh
 RUN apt-get install -y gstreamer1.0-tools gstreamer1.0-alsa gstreamer1.0-plugins-base gstreamer1.0-plugins-good \ 
 gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav \
 libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-good1.0-dev libgstreamer-plugins-bad1.0-dev \
-python3-gi python3-gst-1.0 python3-pil libglib2.0-dev git libbluetooth-dev
+python3-gi python3-gst-1.0 python3-pil libglib2.0-dev git libbluetooth-dev bluez bluetooth
 
 RUN pip3 install pybluez git+https://github.com/Heerpa/jetson-gpio 
 
@@ -52,7 +52,6 @@ RUN cp ./demo/index.html /var/www/html/index.lighttpd.html
 
 FROM base AS runtype_2
 # RECORD MODE
-RUN mkdir $SOPOWARE_DIR/capture
 
 FROM base AS runtype_3
 # DEBUG + SAVE CAMERA & INFERENCE IMAGES MODE

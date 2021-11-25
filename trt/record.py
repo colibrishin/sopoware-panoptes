@@ -2,9 +2,13 @@ import time
 import shutil
 import video_stream 
 import signal
+import os
 
 def main():
     pipe = video_stream.start_gst(video_stream.INDEX_CAPTURE_PIPELINE)
+    
+    if not os.path.exists('./capture'):
+        os.mkdir('./capture')
 
     while True:
         try:

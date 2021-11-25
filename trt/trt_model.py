@@ -1,45 +1,72 @@
 import video_stream
-from mask_beautifier import colorize_mask
-from percentage import write_percentage_table_xml, get_full_percentage
+from util.mask_beautifier import colorize_mask
+from util.percentage import write_percentage_table_xml, get_full_percentage
 from trt_engine import TrtModel
 from decision import decision
+import bl
 
 import numpy as np
 from PIL import Image
 from buzzer import GPIO as JGPIO
 
+from datetime import datetime
 import time
 import shutil
-import signal, sys
+import signal
+import sys
 import os
 import threading
 
-SAVE_DIR = './save/'
+# Requested Inference State from Environment Variables
+DEBUG = True if os.environ['MODE'] == '1' or os.environ['MODE'] == '3' else False
+SAVE = True if os.environ['MODE'] == '3' else False
 
-# Initialize the labels and colors. 
+if SAVE and not os.path.exists(SAVE_DIR):
+    os.mkdir(SAVE_DIR)
+
+if DEBUG:
+    import faulthandler
+    faulthandler.enable()
+
+SAVE_DIR = './save/'
+DATA_DIR = './data'
+
+# Initialize the labels and colors.
 COLOR_SHIFT = os.environ['COLOR_SHIFT']
 GPIO_PIN = os.environ['GPIO_PIN']
 SIDEWALK_CLASS = os.environ['SIDEWALK_CLASS']
 
-with open('./labels.txt', 'r') as f:
+with open(os.path.join(DATA_DIR, 'labels.txt'), 'r') as f:
     labels = f.read().splitlines()
 
-colors = np.load('./color_code.npy').tolist()
-def rgb_to_hex(rgb: list):
-    code = []
-    for i in rgb:
-        for j in i:
-            if j < 0 or j > 255:
-                assert 'Color code out of range'
-        code.append('#%02x%02x%02x' % i)
-    return code
-colors = [tuple(color) for color in colors]
-hex_colors = rgb_to_hex(colors)
+if DEBUG:
+    colors = np.load(os.path.join(DATA_DIR, 'color_code.npy')).tolist()
+    def rgb_to_hex(rgb: list):
+        code = []
+        for i in rgb:
+            for j in i:
+                if j < 0 or j > 255:
+                    assert 'Color code out of range'
+            code.append('#%02x%02x%02x' % i)
+        return code
+    colors = [tuple(color) for color in colors]
+    hex_colors = rgb_to_hex(colors)
 
+# Buzzer
 GPIO = JGPIO(31)
 
 # Initialize Camera
-pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE)
+LAUNCH_PIPELINE = video_stream.LAUNCH_PIPELINE if DEBUG else video_stream.LAUNCH_PIPELINE_WO_FILE
+pipe = video_stream.start_gst(LAUNCH_PIPELINE)
+
+# Bluetooth listener
+bluetooth_sock = bl.BL()
+BL_TOGGLE = (lambda : bluetooth_sock.state)
+BL_DEV_OFF = (lambda : bluetooth_sock.close)
+
+T_B = threading.Thread(target=bluetooth_sock.cycle, args=())
+T_B.setDaemon(True)
+T_B.start()
 
 def load_model(model_path: str):
     model = TrtModel(model_path)
@@ -62,8 +89,8 @@ def predict_trt(
     '''
 
     if img.shape != input_shape[1:3]:
-        img = Image.fromarray(np.uint8(img)).resize((input_shape[1], input_shape[2]))
-
+        img = Image.fromarray(np.uint8(img)).resize((input_shape[2], input_shape[1]))
+    
     img = np.asarray(img).astype(np.uint8)
     img = np.reshape(img, (1, input_shape[1], input_shape[2], input_shape[3]))
     img = engine(img / 255.0, 1)
@@ -72,16 +99,18 @@ def predict_trt(
     img = np.reshape(img, (1, img.shape[1], img.shape[2], 1))
     return img[0]
 
-def print_time(cap, pred, out, avg, ratio, sidewalk):
+def print_time(start_time, cap, pred, out, avg, ratio, sidewalk, bl_state):
     try:
         interval = 2
         while True:
+            print('Start time : ', start_time())
             print('Updating in ', interval, ' seconds')
             print('Capture Time: ', cap())
             print('Prediction Time: ', pred())
             print('Post-Processing Time from Debugging: ', out())
             print('Average Time: ', avg())
             print('Sidewalk Ratio: ', ratio())
+            print('Bluetooth Connected :', bl_state()())
             if sidewalk():
                 print('SIDEWALK DETECTED')
             time.sleep(interval)
@@ -90,27 +119,18 @@ def print_time(cap, pred, out, avg, ratio, sidewalk):
         raise e
 
 def main():
+    global DEBUG
+    global SAVE
+
     global pipe
+    global BL_TOGGLE
+    global BL_DEV_OFF
 
-    '''
-    Start the Capture-and-determine loop
-
-    DEBUG=[1 or 0] to see the process of loop.
-    '''
     # Initialization
     img = None
-    model, shape = load_model('./trt_model.engine')
+    model, shape = load_model(os.path.join(DATA_DIR, 'trt_model.engine'))
+
     print('Model has been loaded...')
-
-    # Requested Inference State from Environment Variables
-    DEBUG = True if os.environ['MODE'] == '1' or os.environ['MODE'] == '3' else False
-    if DEBUG:
-        import faulthandler
-        faulthandler.enable()
-
-    SAVE = True if os.environ['MODE'] == '3' else False
-    if SAVE and not os.path.exists(SAVE_DIR):
-        os.mkdir(SAVE_DIR)
         
     print('Initialized as ', 'Demo' if DEBUG else 'Batch')
     
@@ -122,23 +142,28 @@ def main():
     total = 0
     average_time = 0
     sidewalk_ratio = 0
+    start_times = datetime.today()
+
+    # State Variable (Bluetooth, Device state is defined globally.)
+    is_sidewalk = False
 
     if DEBUG:
         t_p = threading.Thread(target=print_time, args=(
+                        lambda : start_times,
                         lambda : capture_time,
                         lambda : prediction_time,
                         lambda : output_process_time,
                         lambda : average_time,
                         lambda : sidewalk_ratio,
-                        lambda : is_sidewalk))
+                        lambda : is_sidewalk,
+                        lambda : BL_TOGGLE))
         t_p.setDaemon(True)
         t_p.start()
 
-    # State Variable
-    is_sidewalk = False
-
     # Main Routine
-    while True:
+    while not BL_DEV_OFF():
+        while not BL_TOGGLE():
+            time.sleep(2)
         try:
             if DEBUG:
                 # CAPTURE
@@ -190,9 +215,6 @@ def main():
 
                 average_time = total / i
             else:
-                video_stream.release_pipe(pipe)
-                pipe = pipe = video_stream.start_gst(video_stream.LAUNCH_PIPELINE_WO_FILE)
-
                 img = video_stream.get_frame(pipe).astype(np.uint8)
                 
                 img = Image.fromarray(img)
@@ -202,24 +224,32 @@ def main():
                 img = np.asarray(img)
 
                 ret = predict_trt(img, shape, model)
+
                 is_sidewalk = decision(ret, SIDEWALK_CLASS)
                 if is_sidewalk:
                     GPIO.on()
                 else:
                     GPIO.off()
+
         except Exception as e:
             print(e)
-            camera_killer(None, None)
+            interrupt(None, None)
             
 if __name__ == "__main__":
-    def camera_killer(signal, frame):
+    def interrupt(signal, frame):
         global pipe
+        global bluetooth_sock
+
         print('Got interrupted')
 
+        bluetooth_sock.close = True
+        bluetooth_sock.cleanup()
+        
         GPIO.off()
         GPIO.release()
         video_stream.release_pipe(pipe)
         sys.exit(0)
 
-    signal.signal(signal.SIGINT, camera_killer)
+    signal.signal(signal.SIGINT, interrupt)
     main()
+    interrupt(None, None)

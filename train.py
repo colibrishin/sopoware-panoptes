@@ -4,13 +4,6 @@ from dataset import create_batch_crossvalidation
 from mobilenetv3.model import MobileNetV3, model_exception_check_if_trainable
 import datetime, os
 
-def scheduler(epoch, lr):
-  if lr < 1e-07:
-      return lr
-  if epoch % 9 == 1:
-    return lr * tf.math.exp(-0.1)
-  return lr
-
 def train_quick_crossvalidation(
         dataset_name: str,
         file_extension: str,
@@ -117,7 +110,6 @@ def fit(
 
         callbacks = [
             tensorboard_callback,
-            #tf.keras.callbacks.LearningRateScheduler(scheduler, verbose=verbose),
             tf.keras.callbacks.ModelCheckpoint('./weights/' + time + '/best_weights', verbose=verbose, save_best_only=save_best_only, save_weights_only=save_weights_only)
         ]
 

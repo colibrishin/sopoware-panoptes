@@ -1,23 +1,5 @@
 Improvement
     Monitoring Process needed
 
-Requirement
-    Module
-    - Add bluetooth module
-    - Add sidewalk check module
-    - Add android app to communicate
-
-TODO
-    trt_model.py 
-        - Argument
-        - attatching modules
-        - Complete the codes for batch mode
-    buzzer.py
-        - Pass Jetson Nano's system GPIO to Docker
-        - do a module test with buzzer model
-
 Consideration
 - make a python package
-
-If possible...
-- Make a graph of required memory allocation of model along with hyperparameter alterations
