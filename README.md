@@ -47,7 +47,7 @@ sudo docker run --ipc host --privileged --rm -it -d \
                 -v /var/lib/bluetooth:/var/lib/bluetooth \
                 --device /dev/gpiochip0:/dev/gpiochip0 --device /dev/gpiochip1:/dev/gpiochip1 \
                 --cap-add=SYS_ADMIN --group-add $(cut -d: -f3 < <(getent group gpio)) \
-                --entrypoint /bin/bash sopoware-panoptes
+                sopoware-panoptes
 ```
 If it's working correctly and built as debug mode, you can monitor the model prediction by accessing the device IP address on port 80.
 
