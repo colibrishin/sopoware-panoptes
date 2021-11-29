@@ -51,7 +51,6 @@ class BL:
                 while True and (not self.close or not self.state):
                     data = self.client_sock.recv(1024)
                     if not data:
-                        self.state = False
                         break
                     if data:
                         self.client_sock.send(data)
@@ -66,5 +65,7 @@ class BL:
                             break
             except OSError:
                 print('Client Disconnected')
-                self.state = False
+                self.client_sock.close()
                 pass
+        
+        self.cleanup()

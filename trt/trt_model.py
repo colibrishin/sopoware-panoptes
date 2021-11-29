@@ -17,6 +17,9 @@ import sys
 import os
 import threading
 
+SAVE_DIR = './save/'
+DATA_DIR = './data'
+
 # Requested Inference State from Environment Variables
 DEBUG = True if os.environ['MODE'] == '1' or os.environ['MODE'] == '3' else False
 SAVE = True if os.environ['MODE'] == '3' else False
@@ -27,9 +30,6 @@ if SAVE and not os.path.exists(SAVE_DIR):
 if DEBUG:
     import faulthandler
     faulthandler.enable()
-
-SAVE_DIR = './save/'
-DATA_DIR = './data'
 
 # Initialize the labels and colors.
 COLOR_SHIFT = os.environ['COLOR_SHIFT']
@@ -163,6 +163,7 @@ def main():
     # Main Routine
     while not BL_DEV_OFF():
         while not BL_TOGGLE():
+            GPIO.off()
             time.sleep(2)
         try:
             if DEBUG:
