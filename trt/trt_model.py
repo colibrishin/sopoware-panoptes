@@ -203,7 +203,7 @@ def main():
                 # INFERENCE RESULT POST-PROCESSING
                 ret = colorize_mask(ret, colors)
                 ret = Image.fromarray(ret)
-                ret = ret.resize((width, height))
+                ret = ret.resize((width, height), resample=Image.NEAREST)
                 ret.save('/var/www/html/mask.png')
 
                 if SAVE:
