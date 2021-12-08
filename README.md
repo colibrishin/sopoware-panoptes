@@ -52,7 +52,8 @@ sudo docker run --ipc host --privileged --rm -it -d \
 If it's working correctly and built as debug mode, you can monitor the model prediction by accessing the device IP address on port 80.
 
 ## Demo
-TODO
+[![Panoptes Test](https://img.youtube.com/vi/cixV5epef-o/0.jpg)](https://www.youtube.com/watch?v=cixV5epef-o&list=PLlMDSNRDqISrXgHIdhFAXMeO7ZJ20IG7L "Panoptes Test")
+
 
 ## Cite
 
