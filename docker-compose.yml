@@ -1,7 +1,7 @@
 version: "3"
 services:
         sopoware-panoptes:
-                # I really don't wanted to, but for the bluetooth...
+                # I really didn't want to, but for the bluetooth...
                 privileged: true
                 ports:
                         - "80:80"
