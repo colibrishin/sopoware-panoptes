@@ -24,14 +24,18 @@ def rotate_images(path: str, angles: list):
     lt_root = os.path.join(path, 'labels', 'train')
     lv_root = os.path.join(path, 'labels', 'valid')
 
-    labels = list(glob(lt_root + '/*.png'))
-    labels = labels.extend(list(glob(lv_root + '/*.png')))
+    lt_labels = glob(lt_root + '/*.*')
+    lv_labels = glob(lv_root + '/*.*')
+    labels = lt_labels + lv_labels
     
-    images = list(glob(it_root + '/*.jpg'))
-    images = images.extend(list(glob(iv_root + '/*.jpg')))
+    it_images = glob(it_root + '/*.*')
+    iv_images = glob(iv_root + '/*.*')
+    images = it_images + iv_images
     
     for path in labels:
         for a in angles:
+            if not os.path.isfile(path):
+              continue
             lbl = Image.open(path).convert("P")
             palette = lbl.getpalette()
             lbl = np.array(lbl)
@@ -50,6 +54,8 @@ def rotate_images(path: str, angles: list):
 
     for path in images:
         for a in angles:
+            if not os.path.isfile(path):
+              continue
             img = cv2.imread(path)
             rotated_img = rotate_image_cv2(img, a, cv2.INTER_LINEAR)
 
