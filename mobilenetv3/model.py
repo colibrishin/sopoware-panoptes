@@ -96,7 +96,7 @@ class MobileNetV3():
         self.model.compile(
             optimizer=opt,
             loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-            metrics=[tf.keras.metrics.SparseTopKCategoricalAccuracy(k=1), IoU(self.n_classes), ClassIoU(road_n), ClassIoU(sidewalk_n)]
+            metrics=[tf.keras.metrics.SparseTopKCategoricalAccuracy(k=1), IoU(self.n_classes), ClassIoU(road_n, name='RoadIoU'), ClassIoU(sidewalk_n, name='SidewalkIoU')]
         )
         self._is_model_train_ready = True
     
