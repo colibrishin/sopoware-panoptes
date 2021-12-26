@@ -115,7 +115,7 @@ def print_time(start_time, cap, pred, out, avg, ratio, sidewalk, bl_state):
                 print('SIDEWALK DETECTED')
             time.sleep(interval)
             os.system('clear')
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as e:
         raise e
 
 def main():
