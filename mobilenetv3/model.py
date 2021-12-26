@@ -2,7 +2,7 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 from .mobilenetv3small_wm import MobileNetV3SmallSegmentation as MNV3
 import datetime
-from .metric.iou import IoU, RoadIoU, SidewalkIoU
+from .metric.iou import IoU, ClassIoU
 
 from tensorflow.python.compiler.tensorrt import trt_convert as trt
 
