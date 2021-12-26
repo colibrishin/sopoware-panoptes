@@ -47,7 +47,7 @@ class IoU(tf.keras.metrics.Metric):
 
 class ClassIoU(tf.keras.metrics.Metric):
   def __init__(self, n_class: int, name='RoadIoU', **kwargs):
-    super(RoadIoU, self).__init__(name=name, **kwargs)
+    super(ClassIoU, self).__init__(name=name, **kwargs)
     self.union = self.add_weight(name='iou_union', initializer='zeros')
     self.intersection = self.add_weight(name='iou_intersection', initializer='zeros')
 
