@@ -24,15 +24,23 @@ class IoU(tf.keras.metrics.Metric):
     y_pred = tf.argmax(y_pred, axis=-1)
     y_pred = self.split_channel(y_pred)
     y_pred = tf.cast(y_pred, tf.bool)
+    
+    y_true_count = tf.reduce_sum(tf.cast(y_true, tf.float32)) 
+    y_pred_count = tf.reduce_sum(tf.cast(y_pred, tf.float32))
+    
+    if y_true_count == 0 and y_pred_count == 0:
+      self.intersection.assign_add(1)
+      self.union.assign_add(1)
+     
+    else:
+      intersection = tf.logical_and(y_true, y_pred)
+      union = tf.logical_or(y_true, y_pred)
 
-    intersection = tf.logical_and(y_true, y_pred)
-    union = tf.logical_or(y_true, y_pred)
+      intersection = tf.reduce_sum(tf.cast(intersection, tf.float32))
+      union = tf.reduce_sum(tf.cast(union, tf.float32))
 
-    intersection = tf.reduce_sum(tf.cast(intersection, tf.float32))
-    union = tf.reduce_sum(tf.cast(union, tf.float32))
-
-    self.intersection.assign_add(intersection)
-    self.union.assign_add(union)
+      self.intersection.assign_add(intersection)
+      self.union.assign_add(union)
 
   def result(self):
     return self.intersection / self.union
