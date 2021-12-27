@@ -11,7 +11,7 @@ class MeanIoUArgMaxWithClass(MeanIoUArgMax):
   pick one class IoU
   '''
   def __init__(self, num_classes, n_class, name='MeanIoUArgMaxWithClass', dtype=None):
-    super(MeanIoUArgMaxWithClass, self).__init__(name=name, dtype=dtype)
+    super(MeanIoUArgMaxWithClass, self).__init__(num_classes=num_classes, name=name, dtype=dtype)
     self.n_class = n_class
     self.num_classes = num_classes
 
