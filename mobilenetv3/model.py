@@ -2,7 +2,7 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 from .mobilenetv3small_wm import MobileNetV3SmallSegmentation as MNV3
 import datetime
-from .metric.iou import IoU, ClassIoU
+from .metric.iou import MeanIoUArgMax, MeanIoUArgMaxWithClass
 
 from tensorflow.python.compiler.tensorrt import trt_convert as trt
 
@@ -96,7 +96,10 @@ class MobileNetV3():
         self.model.compile(
             optimizer=opt,
             loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-            metrics=[tf.keras.metrics.SparseTopKCategoricalAccuracy(k=1), IoU(self.n_classes), ClassIoU(road_n, name='RoadIoU'), ClassIoU(sidewalk_n, name='SidewalkIoU')]
+            metrics=[tf.keras.metrics.SparseTopKCategoricalAccuracy(k=1), \
+                MeanIoUArgMax(self.n_classes), 
+                MeanIoUArgMaxWithClass(self.n_classes, road_n, name='RoadIoU'), \
+                MeanIoUArgMaxWithClass(self.n_classes, sidewalk_n, name='SidewalkIoU')]
         )
         self._is_model_train_ready = True
     
